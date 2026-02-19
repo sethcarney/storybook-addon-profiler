@@ -1,0 +1,25 @@
+export const FRAME_TIME_60FPS = 16.67
+export const DROPPED_FRAME_MULTIPLIER = 2
+export const THRASHING_FRAME_THRESHOLD = 50
+export const THRASHING_STYLE_WRITE_WINDOW = 50
+export const INTERACTION_LATENCIES_WINDOW = 50
+export const FRAME_TIMES_WINDOW = 60
+export const INPUT_LATENCIES_WINDOW = 30
+export const PAINT_TIMES_WINDOW = 30
+export const SPARKLINE_HISTORY_SIZE = 30
+
+export const JITTER_BASELINE_SIZE = 5
+export const JITTER_MULTIPLIER = 3
+export const JITTER_INPUT_DELTA = 30
+export const JITTER_INPUT_ABSOLUTE = 50
+export const JITTER_FRAME_DELTA = 20
+export const JITTER_FRAME_ABSOLUTE = 40
+export const JITTER_PAINT_DELTA = 20
+export const JITTER_PAINT_ABSOLUTE = 35
+
+export const MAX_DECAY_THRESHOLD = 20
+export const MAX_DECAY_RATE = 0.99
+export const MAX_INPUT_DECAY_THRESHOLD = 20
+export const MAX_INPUT_DECAY_RATE = 0.98
+export const MAX_PAINT_DECAY_THRESHOLD = 10
+export const MAX_PAINT_DECAY_RATE = 0.98
