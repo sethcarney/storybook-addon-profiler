@@ -1,0 +1,15 @@
+# Source
+src/
+
+# Storybook
+.storybook/
+stories/
+storybook-static/
+
+# Config
+tsconfig.json
+tsup.config.ts
+bun.lock
+
+# Dev
+node_modules/
