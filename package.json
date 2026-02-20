@@ -19,16 +19,12 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./manager": {
-      "types": "./dist/manager.d.ts",
-      "default": "./dist/manager.js"
-    },
     "./package.json": "./package.json",
     "./preset": {
       "types": "./dist/preset.d.ts",
       "default": "./dist/preset.js"
     },
-    "./preview": {
+    "./decorator": {
       "types": "./dist/preview.d.ts",
       "default": "./dist/preview.js"
     }
