@@ -181,12 +181,12 @@ const InfoIcon = styled.button(({ theme }) => ({
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: '11px',
-  height: '11px',
-  fontSize: '8px',
-  fontWeight: 600,
-  fontStyle: 'italic',
-  fontFamily: 'Georgia, serif',
+  width: '13px',
+  height: '13px',
+  fontSize: '11px',
+  fontWeight: 'normal',
+  fontStyle: 'normal',
+  fontFamily: 'system-ui, sans-serif',
   borderRadius: '50%',
   border: `1px solid ${theme.color.mediumdark}`,
   color: theme.color.mediumdark,
@@ -194,7 +194,13 @@ const InfoIcon = styled.button(({ theme }) => ({
   padding: 0,
   userSelect: 'none' as const,
   lineHeight: 1,
-  cursor: 'help',
+  cursor: 'default',
+  opacity: 0.7,
+  transition: 'opacity 0.1s ease',
+  '&:hover': {
+    opacity: 1,
+    color: theme.color.secondary,
+  },
   '&:focus': {
     outline: 'none',
     boxShadow: `0 0 0 1px ${theme.color.secondary}`,
@@ -501,6 +507,7 @@ const Metric = React.memo(function Metric({
         {tooltip && (
           <WithTooltip
             tooltip={<TooltipNote note={tooltip} />}
+            trigger="hover"
             closeOnOutsideClick
           >
             <InfoIcon type="button" aria-label={`Info about ${label}`}>
