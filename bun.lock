@@ -28,8 +28,8 @@
         "zone.js": "^0.16.1",
       },
       "peerDependencies": {
-        "@storybook/icons": "^1.6.0",
-        "storybook": "^8.6.17",
+        "@storybook/icons": "*",
+        "storybook": "*",
       },
     },
   },
