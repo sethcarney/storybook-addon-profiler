@@ -1,4 +1,4 @@
-# storybook-performance-profiler
+# storybook-addon-profiler
 
 A Storybook addon that provides real-time performance monitoring for stories. It displays comprehensive metrics including frame timing, input responsiveness, memory usage, React profiling, and more.
 
@@ -13,7 +13,7 @@ Add the addon to your Storybook config (`.storybook/main.ts`):
 const config = {
   addons: [
     // ... other addons
-    'storybook-performance-profiler',
+    'storybook-addon-profiler',
   ],
 }
 ```
@@ -26,7 +26,7 @@ The addon registers a bottom panel titled "⚡ Performance" and applies the `wit
 - To manually apply to a specific story:
 
 ```tsx
-import { withPerformanceMonitor } from 'storybook-performance-profiler/decorator'
+import { withPerformanceMonitor } from 'storybook-addon-profiler/decorator'
 
 export default {
   title: 'MyComponent',

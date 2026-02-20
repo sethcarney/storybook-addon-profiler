@@ -1,6 +1,6 @@
 import type { InteractionInfo, LoafDetails } from './collectors/types'
 
-export const ADDON_ID = 'storybook-performance-profiler'
+export const ADDON_ID = 'storybook-addon-profiler'
 export const PANEL_ID = `${ADDON_ID}/panel`
 
 export const PERF_EVENTS = {

@@ -1,5 +1,5 @@
 {
-  "name": "storybook-performance-profiler",
+  "name": "storybook-addon-profiler",
   "description": "A performance profiler panel addon for Storybook — real-time FPS, INP, CLS, memory, React Profiler metrics and more",
   "type": "module",
   "version": "0.1.0",
