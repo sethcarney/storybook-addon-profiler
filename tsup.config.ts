@@ -18,8 +18,6 @@ export default defineConfig([
     },
     format: ['esm'],
     dts: true,
-    // Use regex to externalize all sub-paths (e.g. react/jsx-runtime, storybook/manager-api)
-    // so the manager bundle never bundles its own React copy alongside Storybook's React.
     external: [/^react/, /^storybook/, /^@storybook/],
     outDir: 'dist',
     clean: false,
