@@ -8,7 +8,7 @@ export default defineConfig([
     },
     format: ['esm'],
     dts: true,
-    external: ['react', 'react-dom', 'storybook', '@storybook/react'],
+    external: ['storybook'],
     outDir: 'dist',
     clean: true,
   },

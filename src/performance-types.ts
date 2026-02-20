@@ -12,8 +12,6 @@ export const PERF_EVENTS = {
   REQUEST_METRICS: `${ADDON_ID}/request-metrics`,
   /** Panel -> Decorator: Highlight/inspect an element by selector */
   INSPECT_ELEMENT: `${ADDON_ID}/inspect-element`,
-  /** Decorator -> Panel: Profiler metrics updated (per-profiler) */
-  PROFILER_UPDATE: `${ADDON_ID}/profiler-update`,
 } as const
 
 export const THRESHOLDS = {
@@ -35,9 +33,6 @@ export const THRESHOLDS = {
   CLS_WARNING: 0.25,
   FORCED_REFLOW_WARNING: 5,
   DOM_MUTATIONS_WARNING: 50,
-  CASCADE_WARNING: 3,
-  SLOW_UPDATES_WARNING: 3,
-  REACT_P95_WARNING: 8,
   MEMORY_DELTA_WARNING: 5,
   MEMORY_DELTA_DANGER: 20,
   GC_PRESSURE_WARNING: 1,
@@ -100,14 +95,6 @@ export interface PerformanceMetrics {
   forcedReflowCount: number
   domMutationsPerFrame: number
   cssVarChanges: number
-  reactRenderCount: number
-  reactMountCount: number
-  reactMountDuration: number
-  reactPostMountUpdateCount: number
-  reactPostMountMaxDuration: number
-  reactP95Duration: number
-  slowReactUpdates: number
-  renderCascades: number
   domElements: number | null
   scriptEvalTime: number
   eventListenerCount: number
@@ -169,14 +156,6 @@ export const DEFAULT_METRICS: PerformanceMetrics = {
   forcedReflowCount: 0,
   domMutationsPerFrame: 0,
   cssVarChanges: 0,
-  reactRenderCount: 0,
-  reactMountCount: 0,
-  reactMountDuration: 0,
-  reactPostMountUpdateCount: 0,
-  reactPostMountMaxDuration: 0,
-  reactP95Duration: 0,
-  slowReactUpdates: 0,
-  renderCascades: 0,
   domElements: null,
   scriptEvalTime: 0,
   eventListenerCount: 0,

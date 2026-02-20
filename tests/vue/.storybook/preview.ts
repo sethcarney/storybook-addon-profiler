@@ -1,6 +1,3 @@
-import { withPerformanceMonitor } from '../../../src/performance-decorator'
-
-export default {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  decorators: [withPerformanceMonitor as any],
-}
+// withPerformanceMonitor is automatically injected by the addon preset.
+// Add any project-specific preview config here.
+export default {}

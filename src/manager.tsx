@@ -4,7 +4,6 @@ import React from 'react'
 import { Badge, WithTooltip, TooltipNote, Code, AddonPanel, Button } from 'storybook/internal/components'
 import { styled, useTheme } from 'storybook/theming'
 
-import { computeP95 } from './collectors/utils'
 import {
   ADDON_ID,
   PANEL_ID,
@@ -15,7 +14,7 @@ import {
   getZeroIsGoodStatus,
 } from './performance-types'
 import type { PerformanceMetrics, ElementTimingDisplay } from './performance-types'
-import type { InteractionInfo, LoafDetails, ReactProfilerMetrics } from './collectors/types'
+import type { InteractionInfo, LoafDetails } from './collectors/types'
 import {
   formatMs,
   formatMb,
@@ -67,13 +66,26 @@ const Section = styled.section(({ theme }) => ({
   border: `1px solid ${theme.appBorderColor}`,
 }))
 
-const SectionHeader = styled.header(({ theme }) => ({
+const SectionHeader = styled.header<{ clickable?: boolean }>(({ theme, clickable }) => ({
   padding: '4px 8px',
   background: theme.barBg,
   borderBottom: `1px solid ${theme.appBorderColor}`,
   display: 'flex',
   alignItems: 'center',
   gap: '4px',
+  cursor: clickable ? 'pointer' : 'default',
+  userSelect: 'none' as const,
+  '&:hover': clickable ? { background: theme.background.hoverable } : {},
+}))
+
+const CollapseToggle = styled.span<{ collapsed: boolean }>(({ theme, collapsed }) => ({
+  marginLeft: 'auto',
+  fontSize: '8px',
+  color: theme.color.mediumdark,
+  transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+  transition: 'transform 0.15s ease',
+  display: 'inline-flex',
+  alignItems: 'center',
 }))
 
 const SectionTitle = styled.h3(({ theme }) => ({
@@ -507,18 +519,22 @@ const MetricsSection = React.memo(function MetricsSection({
   icon,
   title,
   children,
+  defaultCollapsed = false,
 }: {
   icon: string
   title: string
   children: React.ReactNode
+  defaultCollapsed?: boolean
 }) {
+  const [collapsed, setCollapsed] = React.useState(defaultCollapsed)
   return (
     <Section>
-      <SectionHeader>
+      <SectionHeader clickable onClick={() => setCollapsed((c) => !c)}>
         <SectionIcon>{icon}</SectionIcon>
         <SectionTitle>{title}</SectionTitle>
+        <CollapseToggle collapsed={collapsed}>▼</CollapseToggle>
       </SectionHeader>
-      <MetricsList>{children}</MetricsList>
+      {!collapsed && <MetricsList>{children}</MetricsList>}
     </Section>
   )
 })
@@ -851,107 +867,6 @@ const LayoutAndInternalsSection = React.memo(function LayoutAndInternalsSection(
   )
 })
 
-interface ProfilerDisplay {
-  id: string
-  metrics: ReactProfilerMetrics
-  lastUpdated: number
-}
-
-const ReactPerformancePanel = React.memo(function ReactPerformancePanel({
-  id, reactMountCount, reactMountDuration, reactRenderCount,
-  reactPostMountUpdateCount, slowReactUpdates, reactP95Duration,
-  renderCascades, memoizationEfficiency,
-}: {
-  id: string; reactMountCount: number; reactMountDuration: number; reactRenderCount: number
-  reactPostMountUpdateCount: number; slowReactUpdates: number; reactP95Duration: number
-  renderCascades: number; memoizationEfficiency: number
-}) {
-  const workSaved = Math.max(0, Math.min(100, (1 - memoizationEfficiency) * 100))
-  const savedStatus = workSaved >= 20 ? 'success' : workSaved > 0 ? 'neutral' : 'warning'
-
-  return (
-    <Section>
-      <SectionHeader>
-        <SectionIcon>⚛️</SectionIcon>
-        <SectionTitle>React Performance</SectionTitle>
-      </SectionHeader>
-      <MetricsList>
-        <Metric label="ID" tooltip="Profiler ID">{id}</Metric>
-        <Metric label="Mount" tooltip="Initial render count and total duration."
-          detail={reactMountDuration > 0 ? <>{formatMs(reactMountDuration)} total</> : null}>
-          {reactMountCount}×
-        </Metric>
-        <Metric label="Slow Updates" tooltip="React updates taking >16ms."
-          detail={reactRenderCount > 0 && reactPostMountUpdateCount > 0 ? <>{reactPostMountUpdateCount} total updates</> : null}>
-          {reactRenderCount > 0
-            ? <StatusBadge variant={getStatus(slowReactUpdates, 0, THRESHOLDS.SLOW_UPDATES_WARNING)}>
-                <span>{slowReactUpdates === 0 ? '⚡ ' : '🐌 '}</span><span>{slowReactUpdates}</span>
-              </StatusBadge>
-            : <NoDataHint>No renders</NoDataHint>}
-        </Metric>
-        <Metric label="P95 Duration" tooltip="95th percentile React update duration.">
-          {reactP95Duration > 0
-            ? <StatusBadge variant={getStatus(reactP95Duration, 0, THRESHOLDS.REACT_P95_WARNING)}>
-                <span>{reactP95Duration < THRESHOLDS.REACT_P95_WARNING ? '🎯 ' : '🐢 '}</span>
-                <span>{formatMs(reactP95Duration)}</span>
-              </StatusBadge>
-            : <SecondaryValue>—</SecondaryValue>}
-        </Metric>
-        <Metric label="Cascades" tooltip="Nested updates during commit phase.">
-          <StatusBadge variant={getStatus(renderCascades, 0, THRESHOLDS.CASCADE_WARNING)}>
-            <span>{renderCascades === 0 ? '✨ ' : '🌀 '}</span><span>{renderCascades}</span>
-          </StatusBadge>
-        </Metric>
-        <Metric label="Work Saved" tooltip="Render work skipped by memoization.">
-          {reactRenderCount > 0
-            ? <StatusBadge variant={savedStatus}>
-                <span>{workSaved >= 20 ? '🎯 ' : workSaved > 0 ? '' : '⚠️ '}</span>
-                <span>{formatPercent(workSaved)}</span>
-              </StatusBadge>
-            : <SecondaryValue>—</SecondaryValue>}
-        </Metric>
-      </MetricsList>
-    </Section>
-  )
-})
-
-const EMPTY_PROFILERS: ProfilerDisplay[] = []
-
-const ReactSection = React.memo(function ReactSection({ profilers = EMPTY_PROFILERS }: { profilers?: ProfilerDisplay[] }) {
-  if (profilers.length === 0) {
-    return (
-      <Section>
-        <SectionHeader>
-          <SectionIcon>⚛️</SectionIcon>
-          <SectionTitle>React Performance</SectionTitle>
-        </SectionHeader>
-        <EmptyState>
-          <EmptyStateTitle>Awaiting profiler data</EmptyStateTitle>
-          <EmptyStateSubtitle>Wrap components with <Code>ProfiledComponent</Code> or interact with the story.</EmptyStateSubtitle>
-        </EmptyState>
-      </Section>
-    )
-  }
-  return (
-    <>
-      {profilers.map((profiler) => (
-        <ReactPerformancePanel
-          key={profiler.id}
-          id={profiler.id}
-          reactMountCount={profiler.metrics.reactMountCount}
-          reactMountDuration={profiler.metrics.reactMountDuration}
-          reactRenderCount={profiler.metrics.reactRenderCount}
-          reactPostMountUpdateCount={profiler.metrics.reactPostMountUpdateCount}
-          slowReactUpdates={profiler.metrics.slowReactUpdates}
-          reactP95Duration={computeP95(profiler.metrics.reactUpdateDurations)}
-          renderCascades={profiler.metrics.nestedUpdateCount}
-          memoizationEfficiency={profiler.metrics.memoizationEfficiency}
-        />
-      ))}
-    </>
-  )
-})
-
 const MemoryAndRenderingSection = React.memo(function MemoryAndRenderingSection({
   memoryUsedMB, memoryDeltaMB, peakMemoryMB, memoryHistory,
   gcPressure, domElements, paintCount, compositorLayers,
@@ -1017,14 +932,11 @@ const MemoryAndRenderingSection = React.memo(function MemoryAndRenderingSection(
 interface PanelState {
   status: 'loading' | 'connected' | 'error' | 'no-decorator'
   metrics: PerformanceMetrics
-  profilersByStory: Record<string, ProfilerDisplay[]>
   errorMessage: string | null
 }
 
 type PanelAction =
   | { type: 'METRICS_RECEIVED'; metrics: PerformanceMetrics }
-  | { type: 'PROFILER_UPDATE'; storyId: string; id: string; metrics: ReactProfilerMetrics }
-  | { type: 'CLEANUP_OLD_STORIES'; currentStoryId: string }
   | { type: 'STORY_ERROR'; message: string }
   | { type: 'NO_DECORATOR' }
   | { type: 'RESET_METRICS' }
@@ -1032,7 +944,6 @@ type PanelAction =
 const INITIAL_STATE: PanelState = {
   status: 'loading',
   metrics: DEFAULT_METRICS,
-  profilersByStory: {},
   errorMessage: null,
 }
 
@@ -1040,24 +951,6 @@ function panelReducer(state: PanelState, action: PanelAction): PanelState {
   switch (action.type) {
     case 'METRICS_RECEIVED':
       return { ...state, status: 'connected', metrics: action.metrics, errorMessage: null }
-    case 'PROFILER_UPDATE': {
-      const { storyId, id, metrics } = action
-      const storyProfilers = state.profilersByStory[storyId] ?? []
-      const existing = storyProfilers.findIndex((p) => p.id === id)
-      const newProfiler = { id, metrics, lastUpdated: Date.now() }
-      let updatedProfilers: ProfilerDisplay[]
-      if (existing >= 0) {
-        updatedProfilers = [...storyProfilers]
-        updatedProfilers[existing] = newProfiler
-      } else {
-        updatedProfilers = [...storyProfilers, newProfiler]
-      }
-      return { ...state, profilersByStory: { ...state.profilersByStory, [storyId]: updatedProfilers } }
-    }
-    case 'CLEANUP_OLD_STORIES': {
-      const currentProfilers = state.profilersByStory[action.currentStoryId]
-      return { ...state, profilersByStory: currentProfilers ? { [action.currentStoryId]: currentProfilers } : {} }
-    }
     case 'STORY_ERROR':
       return { ...state, status: 'error', errorMessage: action.message }
     case 'NO_DECORATOR':
@@ -1070,23 +963,15 @@ function panelReducer(state: PanelState, action: PanelAction): PanelState {
   }
 }
 
-function ConnectedPanelContent({ storyId }: { storyId: string }) {
+function ConnectedPanelContent({ storyId: _storyId }: { storyId: string }) {
   const [state, dispatch] = React.useReducer(panelReducer, INITIAL_STATE)
   const { previewInitialized } = useStorybookState()
-  const currentProfilers = state.profilersByStory[storyId] ?? []
-
-  React.useEffect(() => {
-    dispatch({ type: 'CLEANUP_OLD_STORIES', currentStoryId: storyId })
-  }, [storyId])
 
   const isConnected = () => state.status === 'connected'
 
   const emit = useChannel({
     [PERF_EVENTS.METRICS_UPDATE]: (data: PerformanceMetrics) => {
       dispatch({ type: 'METRICS_RECEIVED', metrics: data })
-    },
-    [PERF_EVENTS.PROFILER_UPDATE]: (data: { storyId: string; id: string; metrics: ReactProfilerMetrics }) => {
-      dispatch({ type: 'PROFILER_UPDATE', storyId: data.storyId, id: data.id, metrics: data.metrics })
     },
     storyRendered: () => emit(PERF_EVENTS.REQUEST_METRICS),
     storyFinished: () => emit(PERF_EVENTS.REQUEST_METRICS),
@@ -1179,7 +1064,6 @@ function ConnectedPanelContent({ storyId }: { storyId: string }) {
             avgLoafDuration={metrics.avgLoafDuration} p95LoafDuration={metrics.p95LoafDuration}
             loafsWithScripts={metrics.loafsWithScripts} worstLoaf={metrics.worstLoaf}
           />
-          <ReactSection profilers={currentProfilers} />
           <LayoutAndInternalsSection
             layoutShiftScore={metrics.layoutShiftScore} layoutShiftCount={metrics.layoutShiftCount}
             currentSessionCLS={metrics.currentSessionCLS} forcedReflowCount={metrics.forcedReflowCount}

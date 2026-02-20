@@ -1,6 +1,5 @@
-import type { ReactProfilerMetrics, RenderInfo } from './types'
 import { SPARKLINE_HISTORY_SIZE } from './constants'
-import { addToWindow, computeAverage, computeP95 } from './utils'
+import { addToWindow, computeAverage } from './utils'
 import { FrameTimingCollector } from './frame-timing-collector'
 import { InputCollector } from './input-collector'
 import { MainThreadCollector } from './main-thread-collector'
@@ -10,7 +9,6 @@ import { MemoryCollector } from './memory-collector'
 import { PaintCollector } from './paint-collector'
 import { StyleMutationCollector } from './style-mutation-collector'
 import { ForcedReflowCollector } from './forced-reflow-collector'
-import { ReactProfilerCollector } from './react-profiler-collector'
 import { ElementTimingCollector } from './element-timing-collector'
 import type { PerformanceMetrics } from '../performance-types'
 
@@ -28,10 +26,6 @@ function createInitialState(): CollectorManagerState {
   }
 }
 
-interface CollectorManagerOptions {
-  onProfilerUpdate?: (storyId: string, id: string, metrics: ReactProfilerMetrics) => void
-}
-
 export class CollectorManager {
   collectors: {
     style: StyleMutationCollector
@@ -42,16 +36,14 @@ export class CollectorManager {
     loaf: LongAnimationFrameCollector
     layoutShift: LayoutShiftCollector
     memory: MemoryCollector
-    react: ReactProfilerCollector
     paint: PaintCollector
     elementTiming: ElementTimingCollector
   }
   #running = false
   #state: CollectorManagerState
   #lastMetrics: PerformanceMetrics | null = null
-  #lastCleanedStoryId: string | null = null
 
-  constructor({ onProfilerUpdate }: CollectorManagerOptions = {}) {
+  constructor() {
     this.#state = createInitialState()
     this.collectors = {
       style: new StyleMutationCollector(),
@@ -62,22 +54,11 @@ export class CollectorManager {
       loaf: new LongAnimationFrameCollector(),
       layoutShift: new LayoutShiftCollector(),
       memory: new MemoryCollector(),
-      react: new ReactProfilerCollector(),
       paint: new PaintCollector(),
       elementTiming: new ElementTimingCollector(),
     }
 
     this.collectors.style.onLayoutDirty = () => this.collectors.reflow.markLayoutDirty()
-
-    if (onProfilerUpdate) {
-      this.collectors.react.setOnProfilerUpdate((storyId, id, metrics) => {
-        onProfilerUpdate(storyId, id, metrics)
-        if (this.#lastCleanedStoryId !== storyId) {
-          this.collectors.react.clearProfilersExcept(storyId)
-          this.#lastCleanedStoryId = storyId
-        }
-      })
-    }
   }
 
   get isRunning(): boolean {
@@ -110,18 +91,6 @@ export class CollectorManager {
     }
     this.#state = createInitialState()
     this.#lastMetrics = null
-  }
-
-  get reportRender(): (info: RenderInfo) => void {
-    return this.collectors.react.reportRender
-  }
-
-  getProfilerIds(): string[] {
-    return this.collectors.react.getProfilerIds()
-  }
-
-  getProfilerMetrics(id: string): ReactProfilerMetrics | undefined {
-    return this.collectors.react.getProfilerMetrics(id)
   }
 
   updateSparklineData(): void {
@@ -182,7 +151,6 @@ export class CollectorManager {
     const memory = this.collectors.memory.getMetrics()
     const style = this.collectors.style.getMetrics()
     const reflow = this.collectors.reflow.getMetrics()
-    const react = this.collectors.react.getMetrics()
     const paint = this.collectors.paint.getMetrics()
     const elementTiming = this.collectors.elementTiming.getMetrics()
 
@@ -240,12 +208,6 @@ export class CollectorManager {
       lastInteraction: input.lastInteraction,
       slowestInteraction: input.slowestInteraction,
       interactionsByType: input.interactionsByType,
-      reactMountCount: react.reactMountCount,
-      reactMountDuration: react.reactMountDuration,
-      reactRenderCount: react.reactRenderCount,
-      reactPostMountUpdateCount: react.reactPostMountUpdateCount,
-      reactPostMountMaxDuration: react.reactPostMountMaxDuration,
-      renderCascades: react.nestedUpdateCount,
       domElements: state.domElements,
       forcedReflowCount: reflow.forcedReflowCount,
       eventListenerCount: 0,
@@ -257,8 +219,6 @@ export class CollectorManager {
       paintJitter: input.paintJitter,
       compositorLayers: paint.compositorLayers,
       domMutationsPerFrame: Math.round(computeAverage(style.domMutationFrames)),
-      slowReactUpdates: react.slowReactUpdates,
-      reactP95Duration: computeP95(react.reactUpdateDurations),
       elementTimingSupported: elementTiming.elementTimingSupported,
       elementTimingCount: elementTiming.elementCount,
       largestElementRenderTime: Math.round(elementTiming.largestRenderTime * 10) / 10,

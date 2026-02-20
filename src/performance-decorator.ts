@@ -1,10 +1,10 @@
 import { addons, useEffect } from 'storybook/internal/preview-api'
 import { CollectorManager } from './collectors/collector-manager'
+import { PERF_EVENTS } from './performance-types'
+import { performanceStore } from './performance-store'
 
 type AnyStoryFn = (...args: unknown[]) => unknown
 type MinimalStoryContext = { id: string; [key: string]: unknown }
-import { PERF_EVENTS } from './performance-types'
-import { performanceStore } from './performance-store'
 
 const UPDATE_INTERVAL_MS = 50
 const SPARKLINE_SAMPLE_INTERVAL_MS = 200
@@ -22,13 +22,7 @@ export const withPerformanceMonitor = (Story: AnyStoryFn, ctx: MinimalStoryConte
 
   useEffect(() => {
     const channel = addons.getChannel()
-
-    const manager = new CollectorManager({
-      onProfilerUpdate: (profilerStoryId, id, metrics) => {
-        performanceStore.updateProfiler(id, metrics)
-        channel.emit(PERF_EVENTS.PROFILER_UPDATE, { id, metrics, storyId: profilerStoryId })
-      },
-    })
+    const manager = new CollectorManager()
 
     manager.start()
 
@@ -37,12 +31,6 @@ export const withPerformanceMonitor = (Story: AnyStoryFn, ctx: MinimalStoryConte
 
     const handleRequestMetrics = () => {
       channel.emit(PERF_EVENTS.METRICS_UPDATE, manager.computeMetrics())
-      for (const id of manager.getProfilerIds()) {
-        const metrics = manager.getProfilerMetrics(id)
-        if (metrics) {
-          channel.emit(PERF_EVENTS.PROFILER_UPDATE, { id, metrics, storyId })
-        }
-      }
     }
 
     const handleReset = () => {

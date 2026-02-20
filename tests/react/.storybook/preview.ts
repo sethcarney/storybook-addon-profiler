@@ -1,6 +1,4 @@
-import { withPerformanceMonitor } from '../../../src/performance-decorator'
-
-export default {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  decorators: [withPerformanceMonitor as any],
-}
+// Decorators (withPerformanceMonitor + withReactProfiler) are automatically
+// injected by the addon preset when it detects a React framework.
+// Add any project-specific preview config here.
+export default {}

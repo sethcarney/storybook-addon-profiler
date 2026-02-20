@@ -8,3 +8,7 @@ function getAddonDir(): string {
 export function managerEntries(entry: string[] = []): string[] {
   return [...entry, join(getAddonDir(), 'manager.js')]
 }
+
+export function previewAnnotations(entry: string[] = []): string[] {
+  return [...entry, join(getAddonDir(), 'preview.js')]
+}
