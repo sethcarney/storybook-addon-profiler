@@ -1,7 +1,7 @@
 import preview from './preview'
-import { __definePreview } from 'storybook/internal/csf'
+import { definePreview } from 'storybook/internal/csf'
 
-const start = () => __definePreview(preview)
+const start = () => definePreview(preview)
 export default start
 
 export {

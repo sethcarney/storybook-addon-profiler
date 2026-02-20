@@ -1,8 +1,8 @@
-import { addons, types, useStorybookState, useChannel } from 'storybook/internal/manager-api'
+import { addons, types, useStorybookState, useChannel } from 'storybook/manager-api'
 import { SyncIcon } from '@storybook/icons'
 import React from 'react'
 import { Badge, WithTooltip, TooltipNote, Code, AddonPanel, Button } from 'storybook/internal/components'
-import { styled, useTheme } from 'storybook/internal/theming'
+import { styled, useTheme } from 'storybook/theming'
 
 import { computeP95 } from './collectors/utils'
 import {

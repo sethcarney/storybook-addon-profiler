@@ -1,6 +1,6 @@
 {
   "name": "storybook-addon-profiler",
-  "description": "A performance profiler panel addon for Storybook — real-time FPS, INP, CLS, memory, React Profiler metrics and more",
+  "description": "A performance profiler panel addon for Storybook — real-time FPS, INP, CLS, memory and more. Works with all Storybook frameworks.",
   "type": "module",
   "version": "0.1.0",
   "license": "MIT",
@@ -12,8 +12,7 @@
     "web-vitals",
     "fps",
     "inp",
-    "cls",
-    "react"
+    "cls"
   ],
   "exports": {
     ".": {
@@ -42,13 +41,17 @@
   "scripts": {
     "build": "tsup",
     "build:watch": "tsup --watch",
-    "dev": "concurrently \"tsup --watch\" \"storybook dev -p 6006\"",
+    "dev": "concurrently \"tsup --watch\" \"bun run storybook:react\"",
     "lint": "eslint src/ --cache",
     "test": "vitest run",
     "test:watch": "vitest",
     "tsc": "tsc --noEmit",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "storybook:react": "storybook dev -p 6006 --config-dir tests/react/.storybook",
+    "storybook:vue": "storybook dev -p 6007 --config-dir tests/vue/.storybook",
+    "storybook:angular": "storybook dev -p 6008 --config-dir tests/angular/.storybook",
+    "build-storybook:react": "storybook build --config-dir tests/react/.storybook --output-dir storybook-static/react",
+    "build-storybook:vue": "storybook build --config-dir tests/vue/.storybook --output-dir storybook-static/vue",
+    "build-storybook:angular": "storybook build --config-dir tests/angular/.storybook --output-dir storybook-static/angular"
   },
   "bundler": {
     "managerEntries": [
@@ -63,29 +66,44 @@
     ]
   },
   "devDependencies": {
-    "@storybook/icons": "^1.4.0",
-    "@storybook/react": "^8.6.0",
-    "@storybook/react-vite": "^8.6.0",
+    "@angular/animations": "^21.1.5",
+    "@angular/common": "^21.1.5",
+    "@angular/compiler": "^21.1.5",
+    "@angular/core": "^21.1.5",
+    "@angular/platform-browser": "^21.1.5",
+    "@angular/platform-browser-dynamic": "^21.1.5",
+    "@storybook/angular": "^10.2.10",
+    "@storybook/icons": "^2.0.1",
+    "@storybook/react": "^10.2.10",
+    "@storybook/react-vite": "^10.2.10",
+    "@storybook/vue3-vite": "^10.2.10",
     "@types/node": "^25.3.0",
     "@types/react": "^18.2.0",
     "concurrently": "^9.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "storybook": "^8.6.0",
+    "storybook": "^10.2.10",
     "tsup": "^8.0.0",
     "typescript": "^5.3.0",
-    "vitest": "^2.0.0"
+    "vitest": "^2.0.0",
+    "vue": "^3.5.28",
+    "zone.js": "^0.16.1"
   },
   "peerDependencies": {
     "@storybook/icons": "*",
-    "@storybook/react": "*",
-    "react": "*",
     "storybook": "*"
   },
   "storybook": {
     "displayName": "Performance Profiler",
     "supportedFrameworks": [
-      "react"
+      "react",
+      "vue3",
+      "angular",
+      "svelte",
+      "preact",
+      "html",
+      "web-components",
+      "solid"
     ],
     "icon": ""
   }

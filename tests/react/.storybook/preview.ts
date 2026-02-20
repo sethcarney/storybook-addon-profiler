@@ -1,4 +1,4 @@
-import { withPerformanceMonitor } from './performance-decorator'
+import { withPerformanceMonitor } from '../../../src/performance-decorator'
 
 export default {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
