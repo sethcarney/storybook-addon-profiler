@@ -69,11 +69,12 @@ export class CollectorManager {
     return Object.values(this.collectors)
   }
 
-  start(): void {
+  start(storyStartTime?: number): void {
     if (this.#running) return
-    for (const collector of this.#allCollectors) {
-      collector.start()
+    for (const [key, collector] of Object.entries(this.collectors)) {
+      if (key !== 'elementTiming') collector.start()
     }
+    this.collectors.elementTiming.start(storyStartTime)
     this.#running = true
   }
 

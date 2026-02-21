@@ -114,8 +114,9 @@ const EmployeeGrid = defineComponent({
     return { rowData, colDefs, defaultColDef, theme }
   },
   template: `
-    <div style="width: 100%; height: 540px">
+    <div data-profiler="ag-grid-div" style="width: 100%; height: 540px">
       <ag-grid-vue
+        data-profiler="ag-grid"
         style="height: 100%"
         :theme="theme"
         :rowData="rowData"

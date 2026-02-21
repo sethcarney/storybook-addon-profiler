@@ -7,25 +7,17 @@ import { StatusBadge } from '../StatusBadge/StatusBadge'
 import type { ElementTimingDisplay } from '../../performance-types'
 
 export const ElementTimingSection = React.memo(function ElementTimingSection({
-  elementTimingSupported, elementTimingCount, largestElementRenderTime, elementTimings,
+  elementTimingCount, largestElementRenderTime, elementTimings,
 }: {
-  elementTimingSupported: boolean; elementTimingCount: number
-  largestElementRenderTime: number; elementTimings: ElementTimingDisplay[]
+  elementTimingCount: number
+  largestElementRenderTime: number
+  elementTimings: ElementTimingDisplay[]
 }) {
-  if (!elementTimingSupported) {
-    return (
-      <MetricsSection icon="🎯" title="Element Timing">
-        <Metric label="Status" tooltip="Element Timing API is Chromium-only">
-          <StatusBadge variant="neutral"><span>⚠️ Not supported</span></StatusBadge>
-        </Metric>
-      </MetricsSection>
-    )
-  }
   if (elementTimingCount === 0) {
     return (
       <MetricsSection icon="🎯" title="Element Timing">
-        <Metric label="No elements tracked" tooltip='Add `elementtiming` attribute to track render time'>
-          <Code style={{ fontSize: '10px' }}>elementtiming="name"</Code>
+        <Metric label="No elements tracked" tooltip='Add data-profiler attribute to elements you want to time'>
+          <Code style={{ fontSize: '10px' }}>data-profiler="name"</Code>
         </Metric>
       </MetricsSection>
     )
@@ -33,17 +25,17 @@ export const ElementTimingSection = React.memo(function ElementTimingSection({
   const sortedElements = [...elementTimings].sort((a, b) => b.renderTime - a.renderTime)
   return (
     <MetricsSection icon="🎯" title="Element Timing">
-      <Metric label="Elements" tooltip="Number of elements tracked">
+      <Metric label="Elements" tooltip="Number of data-profiler elements tracked">
         <StatusBadge variant="success"><span>{'📍 '}</span><span>{elementTimingCount}</span></StatusBadge>
       </Metric>
-      <Metric label="Largest" tooltip="Slowest element to render.">
+      <Metric label="Slowest" tooltip="Slowest element to appear in DOM">
         <StatusBadge variant={getStatusVariant(largestElementRenderTime, 100, 250)}>
           <span>{largestElementRenderTime < 100 ? '⚡ ' : largestElementRenderTime < 250 ? '⏱️ ' : '🐌 '}</span>
           <span>{largestElementRenderTime}ms</span>
         </StatusBadge>
       </Metric>
       {sortedElements.slice(0, 3).map((el, i) => (
-        <Metric key={el.identifier} label={el.identifier} tooltip={`Element: ${el.selector}\nRender: ${el.renderTime}ms`}>
+        <Metric key={el.identifier} label={el.identifier} tooltip={`Element: ${el.selector}\nTime to DOM: ${el.renderTime}ms`}>
           <StatusBadge variant={getStatusVariant(el.renderTime, 100, 250)}>
             <span>{i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : '🥉 '}</span>
             <span>{el.renderTime}ms</span>

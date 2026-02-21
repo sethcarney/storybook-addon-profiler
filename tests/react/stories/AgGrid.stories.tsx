@@ -109,10 +109,12 @@ function EmployeeGrid({ rowCount, pagination, paginationPageSize }: GridDemoProp
 
   return (
     <AgGridProvider modules={[AllCommunityModule]}>
-      <div style={{ width: '100%', height: 540 }}>
+      <div  data-profiler="ag-grid-div" style={{ width: '100%', height: 540 }}>
         <AgGridReact<Employee>
           theme={themeQuartz}
           rowData={rowData}
+          
+          data-profiler="ag-grid"
           columnDefs={colDefs}
           defaultColDef={defaultColDef}
           pagination={pagination}

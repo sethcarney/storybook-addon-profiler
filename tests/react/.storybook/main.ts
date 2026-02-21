@@ -5,7 +5,7 @@ const config: StorybookConfig = {
   addons: [
     // Use the local addon source directly
     {
-      name: 'storybook-addon-profiler/preset',
+      name: '../../../dist/preset.js',
       options: {},
     },
   ],

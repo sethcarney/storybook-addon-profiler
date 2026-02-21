@@ -230,7 +230,6 @@ export function ConnectedPanelContent({ storyId: _storyId }: { storyId: string }
             paintCount={metrics.paintCount} compositorLayers={metrics.compositorLayers}
           />
           <ElementTimingSection
-            elementTimingSupported={metrics.elementTimingSupported}
             elementTimingCount={metrics.elementTimingCount}
             largestElementRenderTime={metrics.largestElementRenderTime}
             elementTimings={metrics.elementTimings}

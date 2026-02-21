@@ -19,12 +19,13 @@ function findStoryRoot(): HTMLElement {
 
 export const withPerformanceMonitor = (Story: AnyStoryFn, ctx: MinimalStoryContext) => {
   const storyId = ctx.id
+  const storyRenderStart = performance.now()
 
   useEffect(() => {
     const channel = addons.getChannel()
     const manager = new CollectorManager()
 
-    manager.start()
+    manager.start(storyRenderStart)
 
     const storyRoot = findStoryRoot()
     const containerCleanup = manager.observeContainer(storyRoot)

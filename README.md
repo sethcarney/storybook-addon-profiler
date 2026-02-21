@@ -1,31 +1,83 @@
 # storybook-addon-profiler
 
-A Storybook addon that provides real-time performance monitoring for stories. It displays comprehensive metrics including frame timing, input responsiveness, memory usage, React profiling, and more.
+Real-time browser performance metrics inside your Storybook panel. Works with every Storybook framework — React, Vue, Angular, Svelte, and more.
 
-This repository contains the implementation used by the addon (manager + preview + collectors).
+![Performance Profiler Demo](./docs/demo.gif)
 
-## Quick install
+---
 
-Add the addon to your Storybook config (`.storybook/main.ts`):
+## Install
 
-```ts
-// .storybook/main.ts
-const config = {
-  addons: [
-    // ... other addons
-    'storybook-addon-profiler',
-  ],
-}
+```bash
+npm install -D storybook-addon-profiler
+# or
+bun add -D storybook-addon-profiler
 ```
 
-The addon registers a bottom panel titled "⚡ Performance" and applies the `withPerformanceMonitor` decorator globally via the preset.
+Register in `.storybook/main.ts`:
 
-## Usage
+```ts
+const config = {
+  addons: ['storybook-addon-profiler'],
+}
+export default config
+```
 
-- The addon is applied globally when included in `main.ts`.
-- To manually apply to a specific story:
+That's it. The **⚡ Performance** panel appears automatically and decorates every story.
+
+---
+
+## What you get
+
+The panel updates every 50 ms while a story is active. Metrics are grouped into collapsible sections:
+
+| Section | Metrics |
+|---|---|
+| **Frame & Paint** | FPS, frame time, dropped frames, frame jitter, stability, paint time |
+| **Input & Responsiveness** | INP, FID, pointer latency, per-interaction timing breakdown (wait / JS / paint) |
+| **Main Thread** | Long Tasks, Total Blocking Time (TBT), DOM thrashing, mutation churn |
+| **Long Animation Frames** | LoAF count, total blocking duration, P95, top script attribution *(Chrome 123+)* |
+| **Layout & Stability** | CLS, forced reflows, style writes, CSS variable mutations |
+| **Memory & Rendering** | JS heap, heap delta, GC pressure, DOM nodes, compositor layers *(Chrome)* |
+| **Element Timing** | Per-element time-to-DOM for elements marked `data-profiler="…"` |
+
+Values are color-coded against Web Vitals thresholds — green / amber / red — so slow paths are immediately visible.
+
+### Inspect
+
+Click the 🔍 button next to any slow interaction target to flash-highlight the element in the preview iframe.
+
+### Reset
+
+Hit the reset button in the panel toolbar to clear all collector baselines mid-story without reloading.
+
+---
+
+## Element Timing (opt-in)
+
+Add the `data-profiler` attribute to any element you want to track individually:
+
+```html
+<img data-profiler="hero-image" src="…" />
+<div data-profiler="above-fold-content">…</div>
+```
+
+In React/TSX stories the attribute is valid JSX out of the box:
 
 ```tsx
+<img data-profiler="hero-image" src={heroSrc} />
+<MyComponent data-profiler="my-component" />
+```
+
+The **Element Timing** section lists each element's time from story render start to DOM insertion, sorted slowest first. Deduplication is by name — only the first appearance of each name is recorded per render.
+
+---
+
+## Manual decorator
+
+The preset applies `withPerformanceMonitor` globally. To apply it to a single story file instead:
+
+```ts
 import { withPerformanceMonitor } from 'storybook-addon-profiler/decorator'
 
 export default {
@@ -34,95 +86,35 @@ export default {
 }
 ```
 
-- Use the panel to view live metrics, click the reset (sync) button to clear baselines, and use the Inspect button to highlight slow interaction targets.
-
-## Architecture
-
-- `preview` (decorator): `src/performance-decorator.tsx` — provides `PerformanceProvider`, collects metrics in the preview iframe, reports via Storybook channel events.
-- `manager` (panel UI): `src/manager.tsx` — subscribes to metrics events, renders the UI sections and sparkline charts.
-- `collectors`: `src/collectors/*` — modular collectors that gather metrics using the best available APIs.
-
-High-level flow:
-
-Preview (decorator) collects → emits `PERF_EVENTS.METRICS_UPDATE` → Manager (panel) consumes and renders.
-
-## Metrics collected
-
-The addon implements the metrics described below (see `src/performance-types.ts` and collector implementations in `src/collectors`):
-
-- Frame Timing: FPS, average frame time, dropped frames, frame jitter, stability
-- Input Responsiveness: pointer latency, paint time, INP (Event Timing API), FID, last/slowest interaction (with breakdown and Inspect)
-- Main Thread: Long Tasks, Total Blocking Time (TBT), thrashing, DOM churn
-- Long Animation Frames (LoAF) — Chrome 123+ detection and script attribution
-- Element Timing: elements with `elementtiming` attribute, largest render time
-- Layout Stability: CLS, forced reflows, style writes
-- React Performance: mount counts/durations, slow updates, P95 durations, render cascades
-- Memory & Resources (Chrome-only): heap usage, memory delta, GC pressure, compositor layers
-
-## Collectors (examples)
-
-See `src/collectors` for each collector. Notable implementations:
-
-- `frame-timing-collector.ts` — RAF loop and heuristics for dropped frames
-- `input-collector.ts` — Event Timing API + pointermove + double-RAF paint timing
-- `main-thread-collector.ts` — Long Tasks API
-- `long-animation-frame-collector.ts` — LoAF entries with script attribution
-- `react-profiler-collector.ts` — aggregates React Profiler `onRender` reports
-- `memory-collector.ts` — uses `performance.memory` when available
-- `paint-collector.ts` — paint/resource observers and compositor-layer heuristic
-
-## Exports / entry points
-
-The codebase follows the standard Storybook addon entry layout in source form:
-
-- Preset / manager / preview / types:
-  - `src/preset.ts` — manager entries (preset)
-  - `src/manager.tsx` — Manager panel UI
-  - `src/preview.ts` — registers `withPerformanceMonitor` decorator
-  - `src/performance-decorator.tsx` — decorator/provider/inspect helper
-  - `src/performance-types.ts` — `PERF_EVENTS`, `THRESHOLDS`, `DEFAULT_METRICS`, types
-
-If you publish, ensure your package exports map the manager/preview/preset files as Storybook expects.
+---
 
 ## Browser compatibility
 
-- Chrome/Edge: full feature set (including `performance.memory` and LoAF where supported)
-- Firefox/Safari: many metrics available, but memory API and some EventTiming/LoAF features may be unavailable — collectors gracefully degrade.
+| Feature | Chrome/Edge | Firefox | Safari |
+|---|---|---|---|
+| Core metrics (FPS, TBT, CLS, INP) | ✅ | ✅ | ✅ |
+| Long Animation Frames | ✅ (123+) | ❌ | ❌ |
+| JS heap memory | ✅ | ❌ | ❌ |
+| Element Timing | ✅ | ❌ | ❌ |
 
-## Development commands
-
-Run the typical workspace scripts (adjust as needed for your monorepo layout):
-
-```bash
-# Build
-bun run build
-
-# Typecheck
-npm run tsc
-
-# Lint
-npm run lint
-
-# Run tests (if present)
-npm test
-```
-
-## Files to review
-
-- Performance decorator: [src/performance-decorator.tsx](src/performance-decorator.tsx)
-- Panel UI: [src/manager.tsx](src/manager.tsx)
-- Types and constants: [src/performance-types.ts](src/performance-types.ts)
-- Collectors: [src/collectors](src/collectors)
-
-## Notes before publishing
-
-- Verify package `exports` in `package.json` expose `manager`, `preview`, and `preset` entry points expected by Storybook.
-- Confirm `package.json` `files`/bundling includes compiled `manager.js` (or use the preset to point to source) depending on your publishing/bundling approach.
-- Run a full build and TypeScript checks in CI before publishing.
+All collectors degrade gracefully — unsupported metrics show a "not available" badge rather than erroring.
 
 ---
 
-If you want, I can:
-- Run the build and typecheck locally now, or
-- Add a `package.json` `exports` example and a lightweight `README` for npm publishing, or
-- Create a short `publish` checklist/PR template for releasing the package.
+## Supported Storybook frameworks
+
+`react` · `vue3` · `angular` · `svelte` · `preact` · `html` · `web-components` · `solid`
+
+Requires **Storybook 8+**.
+
+---
+
+## Architecture
+
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for a full breakdown of the collector system, channel protocol, and manager panel.
+
+---
+
+## License
+
+MIT
