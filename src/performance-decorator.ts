@@ -1,7 +1,7 @@
-import { addons, useEffect } from 'storybook/internal/preview-api'
-import { CollectorManager } from './collectors/collector-manager'
-import { PERF_EVENTS } from './performance-types'
-import { performanceStore } from './performance-store'
+import { addons, useEffect } from "storybook/internal/preview-api"
+import { CollectorManager } from "./collectors/collector-manager"
+import { PERF_EVENTS } from "./performance-types"
+import { performanceStore } from "./performance-store"
 
 type AnyStoryFn = (...args: unknown[]) => unknown
 type MinimalStoryContext = { id: string; [key: string]: unknown }
@@ -10,11 +10,7 @@ const UPDATE_INTERVAL_MS = 50
 const SPARKLINE_SAMPLE_INTERVAL_MS = 200
 
 function findStoryRoot(): HTMLElement {
-  return (
-    document.getElementById('storybook-root') ??
-    document.getElementById('storybook-preview-root') ??
-    document.body
-  )
+  return document.getElementById("storybook-root") ?? document.getElementById("storybook-preview-root") ?? document.body
 }
 
 export const withPerformanceMonitor = (Story: AnyStoryFn, ctx: MinimalStoryContext) => {
@@ -78,19 +74,19 @@ export const withPerformanceMonitor = (Story: AnyStoryFn, ctx: MinimalStoryConte
 }
 
 function handleInspectElement(selector: string): void {
-  if (!selector || selector === 'unknown') return
+  if (!selector || selector === "unknown") return
   try {
     const element = document.querySelector(selector)
     if (element instanceof HTMLElement) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      element.scrollIntoView({ behavior: "smooth", block: "center" })
       const originalOutline = element.style.outline
       const originalOutlineOffset = element.style.outlineOffset
-      element.style.outline = '3px solid #f06'
-      element.style.outlineOffset = '2px'
+      element.style.outline = "3px solid #f06"
+      element.style.outlineOffset = "2px"
       setTimeout(() => {
-        element.style.outline = '3px solid #06f'
+        element.style.outline = "3px solid #06f"
         setTimeout(() => {
-          element.style.outline = '3px solid #f06'
+          element.style.outline = "3px solid #f06"
           setTimeout(() => {
             element.style.outline = originalOutline
             element.style.outlineOffset = originalOutlineOffset

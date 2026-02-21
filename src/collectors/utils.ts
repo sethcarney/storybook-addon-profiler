@@ -63,7 +63,7 @@ export function updateMaxWithDecay(
   currentMax: number,
   newValue: number,
   decayThreshold: number,
-  decayRate: number,
+  decayRate: number
 ): number {
   if (newValue > currentMax) {
     return newValue

@@ -1,5 +1,5 @@
-import type { PerformanceMetrics } from './performance-types'
-import { DEFAULT_METRICS } from './performance-types'
+import type { PerformanceMetrics } from "./performance-types"
+import { DEFAULT_METRICS } from "./performance-types"
 
 export function createPerformanceStore() {
   let globalMetrics: PerformanceMetrics = { ...DEFAULT_METRICS }
@@ -31,7 +31,7 @@ export function createPerformanceStore() {
     resetAll(): void {
       globalMetrics = { ...DEFAULT_METRICS }
       notifySubscribers()
-    },
+    }
   }
 }
 

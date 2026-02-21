@@ -1,16 +1,16 @@
-import { SPARKLINE_HISTORY_SIZE } from './constants'
-import { addToWindow, computeAverage } from './utils'
-import { FrameTimingCollector } from './frame-timing-collector'
-import { InputCollector } from './input-collector'
-import { MainThreadCollector } from './main-thread-collector'
-import { LongAnimationFrameCollector } from './long-animation-frame-collector'
-import { LayoutShiftCollector } from './layout-shift-collector'
-import { MemoryCollector } from './memory-collector'
-import { PaintCollector } from './paint-collector'
-import { StyleMutationCollector } from './style-mutation-collector'
-import { ForcedReflowCollector } from './forced-reflow-collector'
-import { ElementTimingCollector } from './element-timing-collector'
-import type { PerformanceMetrics } from '../performance-types'
+import { SPARKLINE_HISTORY_SIZE } from "./constants"
+import { addToWindow, computeAverage } from "./utils"
+import { FrameTimingCollector } from "./frame-timing-collector"
+import { InputCollector } from "./input-collector"
+import { MainThreadCollector } from "./main-thread-collector"
+import { LongAnimationFrameCollector } from "./long-animation-frame-collector"
+import { LayoutShiftCollector } from "./layout-shift-collector"
+import { MemoryCollector } from "./memory-collector"
+import { PaintCollector } from "./paint-collector"
+import { StyleMutationCollector } from "./style-mutation-collector"
+import { ForcedReflowCollector } from "./forced-reflow-collector"
+import { ElementTimingCollector } from "./element-timing-collector"
+import type { PerformanceMetrics } from "../performance-types"
 
 interface CollectorManagerState {
   fpsHistory: number[]
@@ -22,7 +22,7 @@ function createInitialState(): CollectorManagerState {
   return {
     fpsHistory: [],
     frameTimeHistory: [],
-    domElements: null,
+    domElements: null
   }
 }
 
@@ -55,7 +55,7 @@ export class CollectorManager {
       layoutShift: new LayoutShiftCollector(),
       memory: new MemoryCollector(),
       paint: new PaintCollector(),
-      elementTiming: new ElementTimingCollector(),
+      elementTiming: new ElementTimingCollector()
     }
 
     this.collectors.style.onLayoutDirty = () => this.collectors.reflow.markLayoutDirty()
@@ -72,7 +72,7 @@ export class CollectorManager {
   start(storyStartTime?: number): void {
     if (this.#running) return
     for (const [key, collector] of Object.entries(this.collectors)) {
-      if (key !== 'elementTiming') collector.start()
+      if (key !== "elementTiming") collector.start()
     }
     this.collectors.elementTiming.start(storyStartTime)
     this.#running = true
@@ -116,7 +116,7 @@ export class CollectorManager {
     let pendingCount = false
 
     const countElements = () => {
-      this.#state.domElements = container.querySelectorAll('*').length
+      this.#state.domElements = container.querySelectorAll("*").length
       pendingCount = false
     }
 
@@ -226,8 +226,8 @@ export class CollectorManager {
       elementTimings: elementTiming.elements.map((e) => ({
         identifier: e.identifier,
         renderTime: Math.round(e.renderTime * 10) / 10,
-        selector: e.selector,
-      })),
+        selector: e.selector
+      }))
     }
 
     this.#lastMetrics = metrics

@@ -1,15 +1,15 @@
-import { Component, Input } from '@angular/core'
-import { CommonModule } from '@angular/common'
-import type { Meta, StoryObj } from '@storybook/angular'
+import { Component, Input } from "@angular/core"
+import { CommonModule } from "@angular/common"
+import type { Meta, StoryObj } from "@storybook/angular"
 
 const COLORS = {
-  primary: { bg: '#0969da', text: '#fff' },
-  secondary: { bg: '#eaeef2', text: '#24292f' },
-  danger: { bg: '#cf222e', text: '#fff' },
+  primary: { bg: "#0969da", text: "#fff" },
+  secondary: { bg: "#eaeef2", text: "#24292f" },
+  danger: { bg: "#cf222e", text: "#fff" }
 } as const
 
 @Component({
-  selector: 'app-button',
+  selector: "app-button",
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -21,17 +21,17 @@ const COLORS = {
     >
       {{ label }}<ng-container *ngIf="count > 0"> ({{ count }})</ng-container>
     </button>
-  `,
+  `
 })
 export class ButtonComponent {
-  @Input() label = 'Click me'
-  @Input() variant: keyof typeof COLORS = 'primary'
+  @Input() label = "Click me"
+  @Input() variant: keyof typeof COLORS = "primary"
   count = 0
   colors = COLORS
 }
 
 @Component({
-  selector: 'app-expensive-render',
+  selector: "app-expensive-render",
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -43,15 +43,12 @@ export class ButtonComponent {
         Add 500 items ({{ items.length }} total)
       </button>
       <div style="margin-top: 16px; max-height: 300px; overflow: auto;">
-        <div
-          *ngFor="let item of items"
-          style="padding: 4px 8px; border-bottom: 1px solid #eee; font-size: 12px;"
-        >
+        <div *ngFor="let item of items" style="padding: 4px 8px; border-bottom: 1px solid #eee; font-size: 12px;">
           Item #{{ item }}
         </div>
       </div>
     </div>
-  `,
+  `
 })
 export class ExpensiveRenderComponent {
   items: number[] = []
@@ -63,29 +60,29 @@ export class ExpensiveRenderComponent {
 }
 
 const meta: Meta<ButtonComponent> = {
-  title: 'Example/Angular Button',
+  title: "Example/Angular Button",
   component: ButtonComponent,
   argTypes: {
     variant: {
-      control: 'select',
-      options: ['primary', 'secondary', 'danger'],
-    },
-  },
+      control: "select",
+      options: ["primary", "secondary", "danger"]
+    }
+  }
 }
 
 export default meta
 type Story = StoryObj<ButtonComponent>
 
 export const Primary: Story = {
-  args: { label: 'Angular Primary Button', variant: 'primary' },
+  args: { label: "Angular Primary Button", variant: "primary" }
 }
 
 export const Secondary: Story = {
-  args: { label: 'Angular Secondary Button', variant: 'secondary' },
+  args: { label: "Angular Secondary Button", variant: "secondary" }
 }
 
 export const Danger: Story = {
-  args: { label: 'Angular Danger Button', variant: 'danger' },
+  args: { label: "Angular Danger Button", variant: "danger" }
 }
 
 /**
@@ -96,7 +93,7 @@ export const ExpensiveRender: Story = {
     props: {},
     template: `<app-expensive-render />`,
     moduleMetadata: {
-      imports: [ExpensiveRenderComponent],
-    },
-  }),
+      imports: [ExpensiveRenderComponent]
+    }
+  })
 }

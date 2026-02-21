@@ -1,6 +1,6 @@
-import type { MetricCollector, StyleMutationMetrics } from './types'
-import { THRASHING_FRAME_THRESHOLD, THRASHING_STYLE_WRITE_WINDOW } from './constants'
-import { addToWindow } from './utils'
+import type { MetricCollector, StyleMutationMetrics } from "./types"
+import { THRASHING_FRAME_THRESHOLD, THRASHING_STYLE_WRITE_WINDOW } from "./constants"
+import { addToWindow } from "./utils"
 
 export class StyleMutationCollector implements MetricCollector<StyleMutationMetrics> {
   #styleWrites = 0
@@ -20,14 +20,14 @@ export class StyleMutationCollector implements MetricCollector<StyleMutationMetr
   start(): void {
     this.#styleObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+        if (mutation.type === "attributes" && mutation.attributeName === "style") {
           this.#styleWrites++
           this.#styleWriteCount++
           this.#lastStyleWriteTime = performance.now()
           this.onLayoutDirty?.()
 
           const target = mutation.target as HTMLElement
-          const styleValue = target.getAttribute('style') || ''
+          const styleValue = target.getAttribute("style") || ""
           const cssVarMatches = styleValue.match(/--[\w-]+\s*:/g)
           if (cssVarMatches) {
             this.#cssVarChanges += cssVarMatches.length
@@ -37,15 +37,15 @@ export class StyleMutationCollector implements MetricCollector<StyleMutationMetr
     })
     this.#styleObserver.observe(document.body, {
       attributes: true,
-      attributeFilter: ['style'],
-      subtree: true,
+      attributeFilter: ["style"],
+      subtree: true
     })
 
     this.#domObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
-        if (mutation.type === 'childList') {
+        if (mutation.type === "childList") {
           this.#domMutationCount += mutation.addedNodes.length + mutation.removedNodes.length
-        } else if (mutation.type === 'attributes' && mutation.attributeName !== 'style') {
+        } else if (mutation.type === "attributes" && mutation.attributeName !== "style") {
           this.#domMutationCount++
         }
       }
@@ -54,15 +54,7 @@ export class StyleMutationCollector implements MetricCollector<StyleMutationMetr
       childList: true,
       attributes: true,
       subtree: true,
-      attributeFilter: [
-        'class',
-        'id',
-        'data-state',
-        'aria-expanded',
-        'aria-hidden',
-        'hidden',
-        'disabled',
-      ],
+      attributeFilter: ["class", "id", "data-state", "aria-expanded", "aria-hidden", "hidden", "disabled"]
     })
 
     this.#sampleInterval = setInterval(() => {
@@ -92,8 +84,7 @@ export class StyleMutationCollector implements MetricCollector<StyleMutationMetr
   checkThrashing(frameTime: number): void {
     const now = performance.now()
     const timeSinceLastWrite = now - this.#lastStyleWriteTime
-    const hadRecentStyleWrite =
-      this.#styleWriteCount > 0 && timeSinceLastWrite < THRASHING_STYLE_WRITE_WINDOW
+    const hadRecentStyleWrite = this.#styleWriteCount > 0 && timeSinceLastWrite < THRASHING_STYLE_WRITE_WINDOW
     if (hadRecentStyleWrite && frameTime > THRASHING_FRAME_THRESHOLD) {
       this.#thrashingScore++
     }
@@ -105,7 +96,7 @@ export class StyleMutationCollector implements MetricCollector<StyleMutationMetr
       styleWrites: this.#styleWrites,
       cssVarChanges: this.#cssVarChanges,
       domMutationFrames: [...this.#domMutationFrames],
-      thrashingScore: this.#thrashingScore,
+      thrashingScore: this.#thrashingScore
     }
   }
 }

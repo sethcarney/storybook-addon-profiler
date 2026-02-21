@@ -1,6 +1,12 @@
-import React from 'react'
-import { useStorybookState } from 'storybook/manager-api'
-import { ConnectedPanelContent, EmptyState, EmptyStateTitle, EmptyStateSubtitle, EmptyStateHint } from '../ConnectedPanelContent/ConnectedPanelContent'
+import React from "react"
+import { useStorybookState } from "storybook/manager-api"
+import {
+  ConnectedPanelContent,
+  EmptyState,
+  EmptyStateTitle,
+  EmptyStateSubtitle,
+  EmptyStateHint
+} from "../ConnectedPanelContent/ConnectedPanelContent"
 
 export function PanelContent({ active }: { active: boolean }) {
   const { storyId, previewInitialized, viewMode } = useStorybookState()
@@ -13,12 +19,16 @@ export function PanelContent({ active }: { active: boolean }) {
       </EmptyState>
     )
   }
-  if (viewMode === 'docs') {
+  if (viewMode === "docs") {
     return (
       <EmptyState>
         <EmptyStateTitle>Docs mode</EmptyStateTitle>
-        <EmptyStateSubtitle>Performance metrics are optimized for story view. Switch to Canvas for accurate measurements.</EmptyStateSubtitle>
-        <EmptyStateHint><span>Docs mode renders stories in iframes which affects timing accuracy.</span></EmptyStateHint>
+        <EmptyStateSubtitle>
+          Performance metrics are optimized for story view. Switch to Canvas for accurate measurements.
+        </EmptyStateSubtitle>
+        <EmptyStateHint>
+          <span>Docs mode renders stories in iframes which affects timing accuracy.</span>
+        </EmptyStateHint>
       </EmptyState>
     )
   }

@@ -1,35 +1,35 @@
-import { defineConfig } from 'tsup'
+import { defineConfig } from "tsup"
 
 export default defineConfig([
   {
     entry: {
-      index: 'src/index.ts',
-      preview: 'src/preview.ts',
+      index: "src/index.ts",
+      preview: "src/preview.ts"
     },
-    format: ['esm'],
+    format: ["esm"],
     dts: true,
     external: [/^storybook/],
-    outDir: 'dist',
-    clean: true,
+    outDir: "dist",
+    clean: true
   },
   {
     entry: {
-      manager: 'src/manager.tsx',
+      manager: "src/manager.tsx"
     },
-    format: ['esm'],
+    format: ["esm"],
     dts: true,
     external: [/^react/, /^storybook/, /^@storybook/],
-    outDir: 'dist',
-    clean: false,
+    outDir: "dist",
+    clean: false
   },
   {
     entry: {
-      preset: 'src/preset.ts',
+      preset: "src/preset.ts"
     },
-    format: ['esm'],
+    format: ["esm"],
     dts: true,
-    platform: 'node',
-    outDir: 'dist',
-    clean: false,
-  },
+    platform: "node",
+    outDir: "dist",
+    clean: false
+  }
 ])

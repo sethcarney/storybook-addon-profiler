@@ -18,7 +18,7 @@ Register in `.storybook/main.ts`:
 
 ```ts
 const config = {
-  addons: ['storybook-addon-profiler'],
+  addons: ["storybook-addon-profiler"]
 }
 export default config
 ```
@@ -31,15 +31,15 @@ That's it. The **⚡ Performance** panel appears automatically and decorates eve
 
 The panel updates every 50 ms while a story is active. Metrics are grouped into collapsible sections:
 
-| Section | Metrics |
-|---|---|
-| **Frame & Paint** | FPS, frame time, dropped frames, frame jitter, stability, paint time |
-| **Input & Responsiveness** | INP, FID, pointer latency, per-interaction timing breakdown (wait / JS / paint) |
-| **Main Thread** | Long Tasks, Total Blocking Time (TBT), DOM thrashing, mutation churn |
-| **Long Animation Frames** | LoAF count, total blocking duration, P95, top script attribution *(Chrome 123+)* |
-| **Layout & Stability** | CLS, forced reflows, style writes, CSS variable mutations |
-| **Memory & Rendering** | JS heap, heap delta, GC pressure, DOM nodes, compositor layers *(Chrome)* |
-| **Element Timing** | Per-element time-to-DOM for elements marked `data-profiler="…"` |
+| Section                    | Metrics                                                                          |
+| -------------------------- | -------------------------------------------------------------------------------- |
+| **Frame & Paint**          | FPS, frame time, dropped frames, frame jitter, stability, paint time             |
+| **Input & Responsiveness** | INP, FID, pointer latency, per-interaction timing breakdown (wait / JS / paint)  |
+| **Main Thread**            | Long Tasks, Total Blocking Time (TBT), DOM thrashing, mutation churn             |
+| **Long Animation Frames**  | LoAF count, total blocking duration, P95, top script attribution _(Chrome 123+)_ |
+| **Layout & Stability**     | CLS, forced reflows, style writes, CSS variable mutations                        |
+| **Memory & Rendering**     | JS heap, heap delta, GC pressure, DOM nodes, compositor layers _(Chrome)_        |
+| **Element Timing**         | Per-element time-to-DOM for elements marked `data-profiler="…"`                  |
 
 Values are color-coded against Web Vitals thresholds — green / amber / red — so slow paths are immediately visible.
 
@@ -78,11 +78,11 @@ The **Element Timing** section lists each element's time from story render start
 The preset applies `withPerformanceMonitor` globally. To apply it to a single story file instead:
 
 ```ts
-import { withPerformanceMonitor } from 'storybook-addon-profiler/decorator'
+import { withPerformanceMonitor } from "storybook-addon-profiler/decorator"
 
 export default {
-  title: 'MyComponent',
-  decorators: [withPerformanceMonitor],
+  title: "MyComponent",
+  decorators: [withPerformanceMonitor]
 }
 ```
 
@@ -90,12 +90,12 @@ export default {
 
 ## Browser compatibility
 
-| Feature | Chrome/Edge | Firefox | Safari |
-|---|---|---|---|
-| Core metrics (FPS, TBT, CLS, INP) | ✅ | ✅ | ✅ |
-| Long Animation Frames | ✅ (123+) | ❌ | ❌ |
-| JS heap memory | ✅ | ❌ | ❌ |
-| Element Timing | ✅ | ❌ | ❌ |
+| Feature                           | Chrome/Edge | Firefox | Safari |
+| --------------------------------- | ----------- | ------- | ------ |
+| Core metrics (FPS, TBT, CLS, INP) | ✅          | ✅      | ✅     |
+| Long Animation Frames             | ✅ (123+)   | ❌      | ❌     |
+| JS heap memory                    | ✅          | ❌      | ❌     |
+| Element Timing                    | ✅          | ❌      | ❌     |
 
 All collectors degrade gracefully — unsupported metrics show a "not available" badge rather than erroring.
 

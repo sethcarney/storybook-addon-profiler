@@ -1,20 +1,20 @@
-import { defineComponent, ref } from 'vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
+import { defineComponent, ref } from "vue"
+import type { Meta, StoryObj } from "@storybook/vue3"
 
 const COLORS = {
-  primary: { bg: '#0969da', text: '#fff' },
-  secondary: { bg: '#eaeef2', text: '#24292f' },
-  danger: { bg: '#cf222e', text: '#fff' },
+  primary: { bg: "#0969da", text: "#fff" },
+  secondary: { bg: "#eaeef2", text: "#24292f" },
+  danger: { bg: "#cf222e", text: "#fff" }
 } as const
 
 const ButtonComponent = defineComponent({
-  name: 'ButtonComponent',
+  name: "ButtonComponent",
   props: {
-    label: { type: String, default: 'Click me' },
+    label: { type: String, default: "Click me" },
     variant: {
       type: String as () => keyof typeof COLORS,
-      default: 'primary',
-    },
+      default: "primary"
+    }
   },
   setup(props) {
     const count = ref(0)
@@ -37,33 +37,33 @@ const ButtonComponent = defineComponent({
     >
       {{ label }}<template v-if="count > 0"> ({{ count }})</template>
     </button>
-  `,
+  `
 })
 
 const meta: Meta<typeof ButtonComponent> = {
-  title: 'Example/Vue Button',
+  title: "Example/Vue Button",
   component: ButtonComponent,
   argTypes: {
     variant: {
-      control: 'select',
-      options: ['primary', 'secondary', 'danger'],
-    },
-  },
+      control: "select",
+      options: ["primary", "secondary", "danger"]
+    }
+  }
 }
 
 export default meta
 type Story = StoryObj<typeof ButtonComponent>
 
 export const Primary: Story = {
-  args: { label: 'Vue Primary Button', variant: 'primary' },
+  args: { label: "Vue Primary Button", variant: "primary" }
 }
 
 export const Secondary: Story = {
-  args: { label: 'Vue Secondary Button', variant: 'secondary' },
+  args: { label: "Vue Secondary Button", variant: "secondary" }
 }
 
 export const Danger: Story = {
-  args: { label: 'Vue Danger Button', variant: 'danger' },
+  args: { label: "Vue Danger Button", variant: "danger" }
 }
 
 /**
@@ -98,6 +98,6 @@ export const ExpensiveRender: Story = {
           </div>
         </div>
       </div>
-    `,
-  }),
+    `
+  })
 }

@@ -130,4 +130,3 @@ export interface ElementTimingMetrics {
   largestRenderTime: number
   elementCount: number
 }
-

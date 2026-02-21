@@ -1,4 +1,4 @@
-import type { ElementTimingMetrics, ElementTimingRecord, MetricCollector } from './types'
+import type { ElementTimingMetrics, ElementTimingRecord, MetricCollector } from "./types"
 
 function getSelector(element: Element): string {
   if ((element as HTMLElement).id) {
@@ -9,8 +9,8 @@ function getSelector(element: Element): string {
         .split(/\s+/)
         .filter((c) => c)
         .slice(0, 2)
-        .join('.')}`
-    : ''
+        .join(".")}`
+    : ""
   return `${element.tagName.toLowerCase()}${classes}`
 }
 
@@ -31,11 +31,11 @@ export class ElementTimingCollector implements MetricCollector<ElementTimingMetr
 
   start(startTime?: number): void {
     this.#startTime = startTime ?? performance.now()
-    const root = document.getElementById('storybook-root') ?? document.body
+    const root = document.getElementById("storybook-root") ?? document.body
 
     // Capture any elements already present — elapsed since story render start
     const elapsed = performance.now() - this.#startTime
-    for (const el of root.querySelectorAll('[data-profiler]')) {
+    for (const el of root.querySelectorAll("[data-profiler]")) {
       this.#processElement(el as HTMLElement, elapsed)
     }
 
@@ -44,10 +44,10 @@ export class ElementTimingCollector implements MetricCollector<ElementTimingMetr
         for (const node of mutation.addedNodes) {
           if (!(node instanceof Element)) continue
           const elapsed = performance.now() - this.#startTime
-          if (node.hasAttribute('data-profiler')) {
+          if (node.hasAttribute("data-profiler")) {
             this.#processElement(node as HTMLElement, elapsed)
           }
-          for (const el of node.querySelectorAll('[data-profiler]')) {
+          for (const el of node.querySelectorAll("[data-profiler]")) {
             this.#processElement(el as HTMLElement, elapsed)
           }
         }
@@ -58,7 +58,7 @@ export class ElementTimingCollector implements MetricCollector<ElementTimingMetr
   }
 
   #processElement(el: HTMLElement, renderTime: number): void {
-    const identifier = el.getAttribute('data-profiler') || 'unnamed'
+    const identifier = el.getAttribute("data-profiler") || "unnamed"
     // Deduplicate by name — first insertion wins
     if (this.#elements.some((e) => e.identifier === identifier)) return
     const record: ElementTimingRecord = {
@@ -66,7 +66,7 @@ export class ElementTimingCollector implements MetricCollector<ElementTimingMetr
       renderTime: Math.round(renderTime * 10) / 10,
       loadTime: Math.round(renderTime * 10) / 10,
       selector: getSelector(el),
-      tagName: el.tagName.toLowerCase(),
+      tagName: el.tagName.toLowerCase()
     }
     this.#elements.push(record)
     if (renderTime > this.#largestRenderTime) {
@@ -90,7 +90,7 @@ export class ElementTimingCollector implements MetricCollector<ElementTimingMetr
       elementTimingSupported: true,
       elements: [...this.#elements],
       largestRenderTime: this.#largestRenderTime,
-      elementCount: this.#elements.length,
+      elementCount: this.#elements.length
     }
   }
 }

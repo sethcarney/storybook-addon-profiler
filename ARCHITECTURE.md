@@ -34,10 +34,10 @@ The `withPerformanceMonitor` decorator is framework-agnostic. It uses `useEffect
 
 ### Inbound channel events
 
-| Event | Action |
-|---|---|
-| `REQUEST_METRICS` | Emit the current metrics snapshot immediately |
-| `RESET` | Reset all collectors to zero, clear baseline |
+| Event                       | Action                                                              |
+| --------------------------- | ------------------------------------------------------------------- |
+| `REQUEST_METRICS`           | Emit the current metrics snapshot immediately                       |
+| `RESET`                     | Reset all collectors to zero, clear baseline                        |
 | `INSPECT_ELEMENT(selector)` | Flash-highlight the matching DOM element (600 ms outline animation) |
 
 ---
@@ -46,18 +46,18 @@ The `withPerformanceMonitor` decorator is framework-agnostic. It uses `useEffect
 
 Each collector in `src/collectors/` is an independent class with a `start()`, `stop()`, and `reset()` method plus a `getMetrics()` snapshot. `CollectorManager` owns all instances and wires them together at decorator startup.
 
-| Collector | API used | Key outputs |
-|---|---|---|
-| `FrameTimingCollector` | `requestAnimationFrame` | FPS, frame time, dropped frames, jitter, stability |
-| `InputCollector` | `EventTiming`, `PointerEvent`, double-rAF | INP, FID, pointer latency, paint time, per-interaction breakdown |
-| `MainThreadCollector` | `PerformanceObserver('longtask')` | Long Tasks, TBT |
-| `LongAnimationFrameCollector` | `PerformanceObserver('long-animation-frame')` | LoAF count, blocking duration, P95, top script *(Chrome 123+)* |
-| `LayoutShiftCollector` | `PerformanceObserver('layout-shift')` | CLS, shift count, session score |
-| `MemoryCollector` | `performance.memory` (200 ms poll) | Heap used, delta, GC pressure *(Chrome only)* |
-| `PaintCollector` | `PerformanceObserver('paint'/'resource')` | Paint count, script eval time, compositor layers |
-| `StyleMutationCollector` | `MutationObserver` | Style writes, CSS var mutations, DOM churn, thrashing score |
-| `ForcedReflowCollector` | Property getter interception | Forced sync layout count |
-| `ElementTimingCollector` | `PerformanceObserver('element')` | Per-element render times *(Chromium only)* |
+| Collector                     | API used                                      | Key outputs                                                      |
+| ----------------------------- | --------------------------------------------- | ---------------------------------------------------------------- |
+| `FrameTimingCollector`        | `requestAnimationFrame`                       | FPS, frame time, dropped frames, jitter, stability               |
+| `InputCollector`              | `EventTiming`, `PointerEvent`, double-rAF     | INP, FID, pointer latency, paint time, per-interaction breakdown |
+| `MainThreadCollector`         | `PerformanceObserver('longtask')`             | Long Tasks, TBT                                                  |
+| `LongAnimationFrameCollector` | `PerformanceObserver('long-animation-frame')` | LoAF count, blocking duration, P95, top script _(Chrome 123+)_   |
+| `LayoutShiftCollector`        | `PerformanceObserver('layout-shift')`         | CLS, shift count, session score                                  |
+| `MemoryCollector`             | `performance.memory` (200 ms poll)            | Heap used, delta, GC pressure _(Chrome only)_                    |
+| `PaintCollector`              | `PerformanceObserver('paint'/'resource')`     | Paint count, script eval time, compositor layers                 |
+| `StyleMutationCollector`      | `MutationObserver`                            | Style writes, CSS var mutations, DOM churn, thrashing score      |
+| `ForcedReflowCollector`       | Property getter interception                  | Forced sync layout count                                         |
+| `ElementTimingCollector`      | `PerformanceObserver('element')`              | Per-element render times _(Chromium only)_                       |
 
 Collectors that rely on unavailable APIs degrade silently — they check for API presence in `start()` and no-op if absent.
 
@@ -87,21 +87,21 @@ All components live under `src/components/`. Each section is collapsible and ren
 
 The panel uses a simple reducer with these states:
 
-| State | Condition |
-|---|---|
-| `loading` | Story rendered, waiting up to 500 ms for first `METRICS_UPDATE` |
-| `connected` | Receiving metrics normally |
-| `no-decorator` | 500 ms elapsed with no metrics (decorator not active) |
-| `error` | Story threw an exception |
+| State          | Condition                                                       |
+| -------------- | --------------------------------------------------------------- |
+| `loading`      | Story rendered, waiting up to 500 ms for first `METRICS_UPDATE` |
+| `connected`    | Receiving metrics normally                                      |
+| `no-decorator` | 500 ms elapsed with no metrics (decorator not active)           |
+| `error`        | Story threw an exception                                        |
 
 ### Channel subscriptions
 
-| Event | Handler |
-|---|---|
-| `METRICS_UPDATE` | Dispatch `METRICS_RECEIVED` → re-render panel sections |
-| `storyRendered` | Emit `REQUEST_METRICS` to get an immediate snapshot |
-| `storyArgsUpdated` | Emit `RESET` (args changed = new baseline) |
-| `storyErrored` / `storyThrewException` | Dispatch error state |
+| Event                                  | Handler                                                |
+| -------------------------------------- | ------------------------------------------------------ |
+| `METRICS_UPDATE`                       | Dispatch `METRICS_RECEIVED` → re-render panel sections |
+| `storyRendered`                        | Emit `REQUEST_METRICS` to get an immediate snapshot    |
+| `storyArgsUpdated`                     | Emit `RESET` (args changed = new baseline)             |
+| `storyErrored` / `storyThrewException` | Dispatch error state                                   |
 
 ---
 
@@ -120,10 +120,10 @@ Both hooks simply prepend the compiled dist files to whatever entry arrays Story
 
 Three tsup bundles are produced:
 
-| Output | Entry | Notes |
-|---|---|---|
-| `dist/index.js` + `dist/preview.js` | `src/index.ts`, `src/preview.ts` | Preview-side code, no React |
-| `dist/manager.js` | `src/manager.tsx` | Manager UI, React externalized |
-| `dist/preset.js` | `src/preset.ts` | Node.js preset, no bundled deps |
+| Output                              | Entry                            | Notes                           |
+| ----------------------------------- | -------------------------------- | ------------------------------- |
+| `dist/index.js` + `dist/preview.js` | `src/index.ts`, `src/preview.ts` | Preview-side code, no React     |
+| `dist/manager.js`                   | `src/manager.tsx`                | Manager UI, React externalized  |
+| `dist/preset.js`                    | `src/preset.ts`                  | Node.js preset, no bundled deps |
 
 All bundles are ESM. Storybook peer deps and React are externalized to avoid version conflicts with the host project.
