@@ -1,15 +1,14 @@
-export { CollectorManager } from './collector-manager'
-export { FrameTimingCollector } from './frame-timing-collector'
-export { InputCollector } from './input-collector'
-export { MainThreadCollector } from './main-thread-collector'
-export { LongAnimationFrameCollector } from './long-animation-frame-collector'
-export { LayoutShiftCollector } from './layout-shift-collector'
-export { MemoryCollector } from './memory-collector'
-export { PaintCollector } from './paint-collector'
-export { StyleMutationCollector } from './style-mutation-collector'
-export { ForcedReflowCollector } from './forced-reflow-collector'
-export { ReactProfilerCollector } from './react-profiler-collector'
-export { ElementTimingCollector } from './element-timing-collector'
-export * from './utils'
-export * from './constants'
-export type * from './types'
+export { CollectorManager } from "./collector-manager"
+export { FrameTimingCollector } from "./frame-timing-collector"
+export { InputCollector } from "./input-collector"
+export { MainThreadCollector } from "./main-thread-collector"
+export { LongAnimationFrameCollector } from "./long-animation-frame-collector"
+export { LayoutShiftCollector } from "./layout-shift-collector"
+export { MemoryCollector } from "./memory-collector"
+export { PaintCollector } from "./paint-collector"
+export { StyleMutationCollector } from "./style-mutation-collector"
+export { ForcedReflowCollector } from "./forced-reflow-collector"
+export { ElementTimingCollector } from "./element-timing-collector"
+export * from "./utils"
+export * from "./constants"
+export type * from "./types"

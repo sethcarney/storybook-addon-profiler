@@ -1,4 +1,4 @@
-import type { LayoutShiftMetrics, MetricCollector } from './types'
+import type { LayoutShiftMetrics, MetricCollector } from "./types"
 
 const SESSION_GAP_MS = 1000
 const SESSION_MAX_DURATION_MS = 5000
@@ -24,7 +24,7 @@ export class LayoutShiftCollector implements MetricCollector<LayoutShiftMetrics>
           this.#processEntry(entry as LayoutShiftEntry)
         }
       })
-      this.#observer.observe({ type: 'layout-shift', buffered: true })
+      this.#observer.observe({ type: "layout-shift", buffered: true })
     } catch {
       // Layout Instability API not supported
     }
@@ -78,7 +78,7 @@ export class LayoutShiftCollector implements MetricCollector<LayoutShiftMetrics>
       layoutShiftScore: Math.round(this.#maxSessionScore * 1e4) / 1e4,
       layoutShiftCount: this.#layoutShiftCount,
       currentSessionScore: Math.round(this.#currentSessionScore * 1e4) / 1e4,
-      sessionCount: this.#sessionCount,
+      sessionCount: this.#sessionCount
     }
   }
 }

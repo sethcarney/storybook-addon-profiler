@@ -1,4 +1,4 @@
-import type { MainThreadMetrics, MetricCollector } from './types'
+import type { MainThreadMetrics, MetricCollector } from "./types"
 
 export class MainThreadCollector implements MetricCollector<MainThreadMetrics> {
   #longTasks = 0
@@ -17,7 +17,7 @@ export class MainThreadCollector implements MetricCollector<MainThreadMetrics> {
           this.#totalBlockingTime += Math.max(0, entry.duration - 50)
         }
       })
-      this.#observer.observe({ type: 'longtask' })
+      this.#observer.observe({ type: "longtask" })
     } catch {
       // Long Tasks API not supported
     }
@@ -38,7 +38,7 @@ export class MainThreadCollector implements MetricCollector<MainThreadMetrics> {
     return {
       longTasks: this.#longTasks,
       longestTask: this.#longestTask,
-      totalBlockingTime: this.#totalBlockingTime,
+      totalBlockingTime: this.#totalBlockingTime
     }
   }
 }

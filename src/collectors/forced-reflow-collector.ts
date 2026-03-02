@@ -1,4 +1,4 @@
-import type { ForcedReflowMetrics, MetricCollector } from './types'
+import type { ForcedReflowMetrics, MetricCollector } from "./types"
 
 interface ReflowRegistry {
   initialized: boolean
@@ -14,18 +14,18 @@ export class ForcedReflowCollector implements MetricCollector<ForcedReflowMetric
 
   static #registry: ReflowRegistry | null = null
   static #REFLOW_PROPS = [
-    'offsetTop',
-    'offsetLeft',
-    'offsetWidth',
-    'offsetHeight',
-    'scrollTop',
-    'scrollLeft',
-    'scrollWidth',
-    'scrollHeight',
-    'clientTop',
-    'clientLeft',
-    'clientWidth',
-    'clientHeight',
+    "offsetTop",
+    "offsetLeft",
+    "offsetWidth",
+    "offsetHeight",
+    "scrollTop",
+    "scrollLeft",
+    "scrollWidth",
+    "scrollHeight",
+    "clientTop",
+    "clientLeft",
+    "clientWidth",
+    "clientHeight"
   ]
 
   markLayoutDirty(): void {
@@ -42,7 +42,7 @@ export class ForcedReflowCollector implements MetricCollector<ForcedReflowMetric
         initialized: false,
         originalGetters: new Map(),
         activeCollectors: new Set(),
-        currentCollector: null,
+        currentCollector: null
       }
     }
 
@@ -65,7 +65,7 @@ export class ForcedReflowCollector implements MetricCollector<ForcedReflowMetric
               }
               return descriptor.get?.call(this)
             },
-            configurable: true,
+            configurable: true
           })
         }
       }
@@ -102,7 +102,7 @@ export class ForcedReflowCollector implements MetricCollector<ForcedReflowMetric
 
   getMetrics(): ForcedReflowMetrics {
     return {
-      forcedReflowCount: this.#forcedReflowCount,
+      forcedReflowCount: this.#forcedReflowCount
     }
   }
 }

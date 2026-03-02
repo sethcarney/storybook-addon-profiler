@@ -1,8 +1,6 @@
-import type { Preview } from '@storybook/react'
-import { withPerformanceMonitor } from './performance-decorator'
+import { withPerformanceMonitor } from "./performance-decorator"
 
-const preview: Preview = {
-  decorators: [withPerformanceMonitor as any],
+export default {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  decorators: [withPerformanceMonitor as any]
 }
-
-export default preview
