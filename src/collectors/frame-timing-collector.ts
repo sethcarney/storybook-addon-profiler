@@ -1,4 +1,4 @@
-import type { FrameTimingMetrics, MetricCollector } from './types'
+import type { FrameTimingMetrics, MetricCollector } from "./types"
 import {
   FRAME_TIME_60FPS,
   DROPPED_FRAME_MULTIPLIER,
@@ -8,9 +8,9 @@ import {
   JITTER_FRAME_DELTA,
   JITTER_FRAME_ABSOLUTE,
   MAX_DECAY_THRESHOLD,
-  MAX_DECAY_RATE,
-} from './constants'
-import { addToWindow, computeAverage, computeFrameStability, updateMaxWithDecay } from './utils'
+  MAX_DECAY_RATE
+} from "./constants"
+import { addToWindow, computeAverage, computeFrameStability, updateMaxWithDecay } from "./utils"
 
 export class FrameTimingCollector implements MetricCollector<FrameTimingMetrics> {
   #frameTimes: number[] = []
@@ -50,7 +50,7 @@ export class FrameTimingCollector implements MetricCollector<FrameTimingMetrics>
       maxFrameTime: this.#maxFrameTime,
       droppedFrames: this.#droppedFrames,
       frameJitter: this.#frameJitter,
-      frameStability: computeFrameStability(this.#frameTimes),
+      frameStability: computeFrameStability(this.#frameTimes)
     }
   }
 
@@ -65,12 +65,7 @@ export class FrameTimingCollector implements MetricCollector<FrameTimingMetrics>
 
   #processFrame(delta: number): void {
     addToWindow(this.#frameTimes, delta, FRAME_TIMES_WINDOW)
-    this.#maxFrameTime = updateMaxWithDecay(
-      this.#maxFrameTime,
-      delta,
-      MAX_DECAY_THRESHOLD,
-      MAX_DECAY_RATE,
-    )
+    this.#maxFrameTime = updateMaxWithDecay(this.#maxFrameTime, delta, MAX_DECAY_THRESHOLD, MAX_DECAY_RATE)
     if (delta > FRAME_TIME_60FPS * DROPPED_FRAME_MULTIPLIER) {
       this.#droppedFrames += Math.floor(delta / FRAME_TIME_60FPS) - 1
     }

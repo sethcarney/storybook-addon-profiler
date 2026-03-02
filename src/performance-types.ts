@@ -1,6 +1,6 @@
-import type { InteractionInfo, LoafDetails } from './collectors/types'
+import type { InteractionInfo, LoafDetails } from "./collectors/types"
 
-export const ADDON_ID = 'storybook-performance-profiler'
+export const ADDON_ID = "storybook-addon-profiler"
 export const PANEL_ID = `${ADDON_ID}/panel`
 
 export const PERF_EVENTS = {
@@ -11,9 +11,7 @@ export const PERF_EVENTS = {
   /** Panel -> Decorator: Request immediate metrics update */
   REQUEST_METRICS: `${ADDON_ID}/request-metrics`,
   /** Panel -> Decorator: Highlight/inspect an element by selector */
-  INSPECT_ELEMENT: `${ADDON_ID}/inspect-element`,
-  /** Decorator -> Panel: Profiler metrics updated (per-profiler) */
-  PROFILER_UPDATE: `${ADDON_ID}/profiler-update`,
+  INSPECT_ELEMENT: `${ADDON_ID}/inspect-element`
 } as const
 
 export const THRESHOLDS = {
@@ -35,13 +33,10 @@ export const THRESHOLDS = {
   CLS_WARNING: 0.25,
   FORCED_REFLOW_WARNING: 5,
   DOM_MUTATIONS_WARNING: 50,
-  CASCADE_WARNING: 3,
-  SLOW_UPDATES_WARNING: 3,
-  REACT_P95_WARNING: 8,
   MEMORY_DELTA_WARNING: 5,
   MEMORY_DELTA_DANGER: 20,
   GC_PRESSURE_WARNING: 1,
-  LAYERS_WARNING: 20,
+  LAYERS_WARNING: 20
 } as const
 
 export interface ElementTimingDisplay {
@@ -100,14 +95,6 @@ export interface PerformanceMetrics {
   forcedReflowCount: number
   domMutationsPerFrame: number
   cssVarChanges: number
-  reactRenderCount: number
-  reactMountCount: number
-  reactMountDuration: number
-  reactPostMountUpdateCount: number
-  reactPostMountMaxDuration: number
-  reactP95Duration: number
-  slowReactUpdates: number
-  renderCascades: number
   domElements: number | null
   scriptEvalTime: number
   eventListenerCount: number
@@ -169,14 +156,6 @@ export const DEFAULT_METRICS: PerformanceMetrics = {
   forcedReflowCount: 0,
   domMutationsPerFrame: 0,
   cssVarChanges: 0,
-  reactRenderCount: 0,
-  reactMountCount: 0,
-  reactMountDuration: 0,
-  reactPostMountUpdateCount: 0,
-  reactPostMountMaxDuration: 0,
-  reactP95Duration: 0,
-  slowReactUpdates: 0,
-  renderCascades: 0,
   domElements: null,
   scriptEvalTime: 0,
   eventListenerCount: 0,
@@ -185,25 +164,25 @@ export const DEFAULT_METRICS: PerformanceMetrics = {
   elementTimingSupported: true,
   elementTimingCount: 0,
   largestElementRenderTime: 0,
-  elementTimings: [],
+  elementTimings: []
 }
 
 export function getStatusVariant(
   value: number,
   good: number,
   warning: number,
-  higherIsBetter = false,
-): 'success' | 'warning' | 'error' {
+  higherIsBetter = false
+): "success" | "warning" | "error" {
   if (higherIsBetter) {
-    if (value >= good) return 'success'
-    if (value >= warning) return 'warning'
-    return 'error'
+    if (value >= good) return "success"
+    if (value >= warning) return "warning"
+    return "error"
   }
-  if (value <= good) return 'success'
-  if (value <= warning) return 'warning'
-  return 'error'
+  if (value <= good) return "success"
+  if (value <= warning) return "warning"
+  return "error"
 }
 
-export function getZeroIsGoodStatus(value: number): 'success' | 'error' {
-  return value === 0 ? 'success' : 'error'
+export function getZeroIsGoodStatus(value: number): "success" | "error" {
+  return value === 0 ? "success" : "error"
 }

@@ -1,84 +1,72 @@
-import type { ElementTimingMetrics, ElementTimingRecord, MetricCollector } from './types'
+import type { ElementTimingMetrics, ElementTimingRecord, MetricCollector } from "./types"
 
-interface ElementTimingEntry extends PerformanceEntry {
-  renderTime: number
-  loadTime: number
-  identifier: string
-  element: Element | null
-  naturalWidth?: number
-  naturalHeight?: number
-  url?: string
-}
-
-function getSimpleSelector(element: Element | null): string {
-  if (!element) return 'unknown'
+function getSelector(element: Element): string {
   if ((element as HTMLElement).id) {
     return `#${(element as HTMLElement).id}`
-  }
-  const timing = element.getAttribute('elementtiming')
-  if (timing) {
-    return `[elementtiming="${timing}"]`
   }
   const classes = (element as HTMLElement).className
     ? `.${(element as HTMLElement).className
         .split(/\s+/)
         .filter((c) => c)
         .slice(0, 2)
-        .join('.')}`
-    : ''
+        .join(".")}`
+    : ""
   return `${element.tagName.toLowerCase()}${classes}`
 }
 
+/**
+ * Tracks elements annotated with `data-profiler="name"` via MutationObserver.
+ * Records the elapsed time (ms) from when the collector started until each
+ * matching element is inserted into the DOM.
+ *
+ * Usage in stories:
+ *   <img data-profiler="hero-image" src="..." />
+ *   <h1 data-profiler="page-title">Hello</h1>
+ */
 export class ElementTimingCollector implements MetricCollector<ElementTimingMetrics> {
-  #observer: PerformanceObserver | null = null
-  #supported = false
+  #observer: MutationObserver | null = null
   #elements: ElementTimingRecord[] = []
   #largestRenderTime = 0
+  #startTime = 0
 
-  constructor() {
-    this.#supported = this.#checkSupport()
-  }
+  start(startTime?: number): void {
+    this.#startTime = startTime ?? performance.now()
+    const root = document.getElementById("storybook-root") ?? document.body
 
-  #checkSupport(): boolean {
-    try {
-      return (
-        typeof PerformanceObserver !== 'undefined' &&
-        PerformanceObserver.supportedEntryTypes?.includes('element') === true
-      )
-    } catch {
-      return false
+    // Capture any elements already present — elapsed since story render start
+    const elapsed = performance.now() - this.#startTime
+    for (const el of root.querySelectorAll("[data-profiler]")) {
+      this.#processElement(el as HTMLElement, elapsed)
     }
-  }
 
-  start(): void {
-    if (!this.#supported) return
-    try {
-      this.#observer = new PerformanceObserver((list) => {
-        for (const entry of list.getEntries()) {
-          this.#processEntry(entry as ElementTimingEntry)
+    this.#observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (!(node instanceof Element)) continue
+          const elapsed = performance.now() - this.#startTime
+          if (node.hasAttribute("data-profiler")) {
+            this.#processElement(node as HTMLElement, elapsed)
+          }
+          for (const el of node.querySelectorAll("[data-profiler]")) {
+            this.#processElement(el as HTMLElement, elapsed)
+          }
         }
-      })
-      this.#observer.observe({ type: 'element', buffered: true })
-    } catch {
-      this.#supported = false
-    }
+      }
+    })
+
+    this.#observer.observe(root, { childList: true, subtree: true })
   }
 
-  #processEntry(entry: ElementTimingEntry): void {
-    const renderTime = entry.renderTime || entry.loadTime || 0
+  #processElement(el: HTMLElement, renderTime: number): void {
+    const identifier = el.getAttribute("data-profiler") || "unnamed"
+    // Deduplicate by name — first insertion wins
+    if (this.#elements.some((e) => e.identifier === identifier)) return
     const record: ElementTimingRecord = {
-      identifier: entry.identifier || 'unnamed',
-      renderTime,
-      loadTime: entry.loadTime || 0,
-      selector: getSimpleSelector(entry.element),
-      tagName: entry.element?.tagName.toLowerCase() || 'unknown',
-    }
-    if (entry.naturalWidth) {
-      record.naturalWidth = entry.naturalWidth
-      record.naturalHeight = entry.naturalHeight
-    }
-    if (entry.url) {
-      record.url = entry.url
+      identifier,
+      renderTime: Math.round(renderTime * 10) / 10,
+      loadTime: Math.round(renderTime * 10) / 10,
+      selector: getSelector(el),
+      tagName: el.tagName.toLowerCase()
     }
     this.#elements.push(record)
     if (renderTime > this.#largestRenderTime) {
@@ -94,14 +82,15 @@ export class ElementTimingCollector implements MetricCollector<ElementTimingMetr
   reset(): void {
     this.#elements = []
     this.#largestRenderTime = 0
+    this.#startTime = performance.now()
   }
 
   getMetrics(): ElementTimingMetrics {
     return {
-      elementTimingSupported: this.#supported,
+      elementTimingSupported: true,
       elements: [...this.#elements],
       largestRenderTime: this.#largestRenderTime,
-      elementCount: this.#elements.length,
+      elementCount: this.#elements.length
     }
   }
 }

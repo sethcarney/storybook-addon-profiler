@@ -1,4 +1,4 @@
-import type { InputMetrics, InteractionInfo, MetricCollector } from './types'
+import type { InputMetrics, InteractionInfo, MetricCollector } from "./types"
 import {
   INTERACTION_LATENCIES_WINDOW,
   INPUT_LATENCIES_WINDOW,
@@ -12,9 +12,9 @@ import {
   MAX_INPUT_DECAY_THRESHOLD,
   MAX_INPUT_DECAY_RATE,
   MAX_PAINT_DECAY_THRESHOLD,
-  MAX_PAINT_DECAY_RATE,
-} from './constants'
-import { addToWindow, computeAverage, updateMaxWithDecay } from './utils'
+  MAX_PAINT_DECAY_RATE
+} from "./constants"
+import { addToWindow, computeAverage, updateMaxWithDecay } from "./utils"
 
 interface PerformanceEventTimingEntry extends PerformanceEntry {
   interactionId: number
@@ -68,14 +68,14 @@ export class InputCollector implements MetricCollector<InputMetrics> {
 
   #checkEventTimingSupport(): boolean {
     try {
-      return PerformanceObserver.supportedEntryTypes?.includes('event') ?? false
+      return PerformanceObserver.supportedEntryTypes?.includes("event") ?? false
     } catch {
       return false
     }
   }
 
   start(): void {
-    window.addEventListener('pointermove', this.#boundHandlePointerMove)
+    window.addEventListener("pointermove", this.#boundHandlePointerMove)
     if (this.#eventTimingSupported) {
       this.#startEventTimingObserver()
     }
@@ -89,10 +89,10 @@ export class InputCollector implements MetricCollector<InputMetrics> {
         }
       })
       this.#eventTimingObserver.observe({
-        type: 'event',
+        type: "event",
         buffered: true,
         // @ts-expect-error durationThreshold is valid but not in all TS libs
-        durationThreshold: 16,
+        durationThreshold: 16
       })
 
       this.#firstInputObserver = new PerformanceObserver((list) => {
@@ -103,7 +103,7 @@ export class InputCollector implements MetricCollector<InputMetrics> {
           this.#firstInputType = entry.name
         }
       })
-      this.#firstInputObserver.observe({ type: 'first-input', buffered: true })
+      this.#firstInputObserver.observe({ type: "first-input", buffered: true })
     } catch {
       this.#eventTimingSupported = false
     }
@@ -125,10 +125,10 @@ export class InputCollector implements MetricCollector<InputMetrics> {
     const interactionInfo: InteractionInfo = {
       duration,
       eventType,
-      targetSelector: entry.targetSelector || 'unknown',
+      targetSelector: entry.targetSelector || "unknown",
       inputDelay,
       processingTime,
-      presentationDelay,
+      presentationDelay
     }
 
     this.#lastInteraction = interactionInfo
@@ -169,7 +169,7 @@ export class InputCollector implements MetricCollector<InputMetrics> {
   }
 
   stop(): void {
-    window.removeEventListener('pointermove', this.#boundHandlePointerMove)
+    window.removeEventListener("pointermove", this.#boundHandlePointerMove)
     this.#eventTimingObserver?.disconnect()
     this.#firstInputObserver?.disconnect()
     this.#eventTimingObserver = null
@@ -218,7 +218,7 @@ export class InputCollector implements MetricCollector<InputMetrics> {
       firstInputType: this.#firstInputType,
       slowestInteraction: this.#slowestInteraction,
       lastInteraction: this.#lastInteraction,
-      interactionsByType: { ...this.#interactionsByType },
+      interactionsByType: { ...this.#interactionsByType }
     }
   }
 
@@ -242,7 +242,7 @@ export class InputCollector implements MetricCollector<InputMetrics> {
       this.#maxInputLatency,
       latency,
       MAX_INPUT_DECAY_THRESHOLD,
-      MAX_INPUT_DECAY_RATE,
+      MAX_INPUT_DECAY_RATE
     )
     this.#recentInputLatencies.push(latency)
     if (this.#recentInputLatencies.length > 10) this.#recentInputLatencies.shift()
@@ -265,7 +265,7 @@ export class InputCollector implements MetricCollector<InputMetrics> {
       this.#maxPaintTime,
       paintTime,
       MAX_PAINT_DECAY_THRESHOLD,
-      MAX_PAINT_DECAY_RATE,
+      MAX_PAINT_DECAY_RATE
     )
     this.#recentPaintTimes.push(paintTime)
     if (this.#recentPaintTimes.length > 10) this.#recentPaintTimes.shift()

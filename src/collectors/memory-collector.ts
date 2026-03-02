@@ -1,6 +1,6 @@
-import type { MemoryMetrics, MetricCollector } from './types'
-import { SPARKLINE_HISTORY_SIZE } from './constants'
-import { addToWindow, getMemoryMB } from './utils'
+import type { MemoryMetrics, MetricCollector } from "./types"
+import { SPARKLINE_HISTORY_SIZE } from "./constants"
+import { addToWindow, getMemoryMB } from "./utils"
 
 export class MemoryCollector implements MetricCollector<MemoryMetrics> {
   #baselineMemoryMB: number | null = null
@@ -54,7 +54,7 @@ export class MemoryCollector implements MetricCollector<MemoryMetrics> {
       peakMemoryMB: this.#peakMemoryMB,
       lastMemoryMB: this.#lastMemoryMB,
       memoryHistory: [...this.#memoryHistory],
-      gcPressure: this.#gcPressure,
+      gcPressure: this.#gcPressure
     }
   }
 

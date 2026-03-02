@@ -1,5 +1,5 @@
-import type { LoafDetails, LoafMetrics, LoafScript, MetricCollector } from './types'
-import { addToWindow, computeAverage, computeP95 } from './utils'
+import type { LoafDetails, LoafMetrics, LoafScript, MetricCollector } from "./types"
+import { addToWindow, computeAverage, computeP95 } from "./utils"
 
 const LOAF_HISTORY_WINDOW = 50
 
@@ -38,7 +38,7 @@ export class LongAnimationFrameCollector implements MetricCollector<LoafMetrics>
 
   #checkSupport(): boolean {
     try {
-      return PerformanceObserver.supportedEntryTypes?.includes('long-animation-frame') ?? false
+      return PerformanceObserver.supportedEntryTypes?.includes("long-animation-frame") ?? false
     } catch {
       return false
     }
@@ -52,7 +52,7 @@ export class LongAnimationFrameCollector implements MetricCollector<LoafMetrics>
           this.#processEntry(entry as LoafEntry)
         }
       })
-      this.#observer.observe({ type: 'long-animation-frame', buffered: true })
+      this.#observer.observe({ type: "long-animation-frame", buffered: true })
     } catch {
       this.#loafSupported = false
     }
@@ -74,13 +74,13 @@ export class LongAnimationFrameCollector implements MetricCollector<LoafMetrics>
       const top = sortedScripts[0]
       if (top) {
         topScript = {
-          sourceURL: top.sourceURL || 'unknown',
-          sourceFunctionName: top.sourceFunctionName || 'anonymous',
+          sourceURL: top.sourceURL || "unknown",
+          sourceFunctionName: top.sourceFunctionName || "anonymous",
           sourceCharPosition: top.sourceCharPosition,
           invokerType: top.invokerType,
-          invoker: top.invoker || 'unknown',
+          invoker: top.invoker || "unknown",
           executionStart: top.executionStart,
-          duration: top.duration,
+          duration: top.duration
         }
       }
     }
@@ -91,7 +91,7 @@ export class LongAnimationFrameCollector implements MetricCollector<LoafMetrics>
       renderStart: entry.renderStart,
       styleAndLayoutStart: entry.styleAndLayoutStart,
       scriptCount: entry.scripts?.length ?? 0,
-      topScript,
+      topScript
     }
 
     this.#lastLoaf = frameDetails
@@ -129,7 +129,7 @@ export class LongAnimationFrameCollector implements MetricCollector<LoafMetrics>
       p95LoafDuration: Math.round(computeP95(this.#loafDurations)),
       loafsWithScripts: this.#loafsWithScripts,
       lastLoaf: this.#lastLoaf,
-      worstLoaf: this.#worstLoaf,
+      worstLoaf: this.#worstLoaf
     }
   }
 }

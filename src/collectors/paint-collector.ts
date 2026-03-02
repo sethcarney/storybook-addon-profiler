@@ -1,4 +1,4 @@
-import type { MetricCollector, PaintMetrics } from './types'
+import type { MetricCollector, PaintMetrics } from "./types"
 
 export class PaintCollector implements MetricCollector<PaintMetrics> {
   #paintCount = 0
@@ -15,7 +15,7 @@ export class PaintCollector implements MetricCollector<PaintMetrics> {
       this.#paintObserver = new PerformanceObserver((list) => {
         this.#paintCount += list.getEntries().length
       })
-      this.#paintObserver.observe({ type: 'paint', buffered: true })
+      this.#paintObserver.observe({ type: "paint", buffered: true })
     } catch {
       // Paint Timing API not supported
     }
@@ -23,9 +23,9 @@ export class PaintCollector implements MetricCollector<PaintMetrics> {
     try {
       this.#resourceObserver = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
-          if (entry.entryType === 'resource') {
+          if (entry.entryType === "resource") {
             const resourceEntry = entry as PerformanceResourceTiming
-            if (resourceEntry.initiatorType === 'script') {
+            if (resourceEntry.initiatorType === "script") {
               const scriptTime = resourceEntry.responseEnd - resourceEntry.fetchStart
               if (scriptTime > 0) {
                 this.#scriptEvalTime += scriptTime
@@ -34,7 +34,7 @@ export class PaintCollector implements MetricCollector<PaintMetrics> {
           }
         }
       })
-      this.#resourceObserver.observe({ type: 'resource', buffered: true })
+      this.#resourceObserver.observe({ type: "resource", buffered: true })
     } catch {
       // Resource Timing API not supported
     }
@@ -55,30 +55,27 @@ export class PaintCollector implements MetricCollector<PaintMetrics> {
 
   updateCompositorLayers(): void {
     const now = performance.now()
-    if (
-      this.#compositorLayers !== null &&
-      now - this.#lastLayerCheckTime < PaintCollector.#LAYER_CHECK_INTERVAL
-    ) {
+    if (this.#compositorLayers !== null && now - this.#lastLayerCheckTime < PaintCollector.#LAYER_CHECK_INTERVAL) {
       return
     }
     this.#lastLayerCheckTime = now
 
     let layerCount = 0
-    const allElements = document.querySelectorAll('*')
+    const allElements = document.querySelectorAll("*")
     for (const el of allElements) {
       const style = getComputedStyle(el)
-      if (style.willChange && style.willChange !== 'auto') {
+      if (style.willChange && style.willChange !== "auto") {
         layerCount++
         continue
       }
-      if (style.perspective && style.perspective !== 'none') {
+      if (style.perspective && style.perspective !== "none") {
         layerCount++
         continue
       }
       const transform = style.transform
-      if (transform && transform !== 'none') {
+      if (transform && transform !== "none") {
         if (
-          transform.startsWith('matrix3d') ||
+          transform.startsWith("matrix3d") ||
           /translate3d|translateZ|rotate3d|rotateX|rotateY|scale3d|perspective/i.test(transform)
         ) {
           layerCount++
@@ -92,7 +89,7 @@ export class PaintCollector implements MetricCollector<PaintMetrics> {
     return {
       paintCount: this.#paintCount,
       scriptEvalTime: this.#scriptEvalTime,
-      compositorLayers: this.#compositorLayers,
+      compositorLayers: this.#compositorLayers
     }
   }
 }

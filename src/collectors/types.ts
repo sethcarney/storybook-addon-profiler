@@ -113,22 +113,6 @@ export interface ForcedReflowMetrics {
   forcedReflowCount: number
 }
 
-export interface ReactProfilerMetrics {
-  reactRenderCount: number
-  reactMountCount: number
-  reactMountDuration: number
-  reactPostMountUpdateCount: number
-  reactPostMountMaxDuration: number
-  nestedUpdateCount: number
-  slowReactUpdates: number
-  reactUpdateDurations: number[]
-  totalBaseDuration: number
-  maxCommitLag: number
-  commitLagHistory: number[]
-  memoizationEfficiency: number
-  totalActualDuration: number
-}
-
 export interface ElementTimingRecord {
   identifier: string
   renderTime: number
@@ -145,14 +129,4 @@ export interface ElementTimingMetrics {
   elements: ElementTimingRecord[]
   largestRenderTime: number
   elementCount: number
-}
-
-export interface RenderInfo {
-  profilerId: string
-  phase: 'mount' | 'update' | 'nested-update'
-  actualDuration: number
-  baseDuration: number
-  startTime: number
-  commitTime: number
-  storyId: string
 }
