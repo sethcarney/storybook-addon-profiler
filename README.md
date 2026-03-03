@@ -1,5 +1,8 @@
 # storybook-addon-profiler
 
+[![npm](https://img.shields.io/npm/v/storybook-addon-profiler)](https://www.npmjs.com/package/storybook-addon-profiler)
+[![license](https://img.shields.io/npm/l/storybook-addon-profiler)](LICENSE)
+
 Real-time browser performance metrics inside your Storybook panel. Works with every Storybook framework — React, Vue, Angular, Svelte, and more.
 
 ![Performance Profiler Demo](https://raw.githubusercontent.com/sethcarney/storybook-addon-profiler/main/demo.gif)
