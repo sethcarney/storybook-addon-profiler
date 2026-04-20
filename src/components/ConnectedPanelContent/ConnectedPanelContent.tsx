@@ -14,6 +14,22 @@ import { MemoryAndRenderingSection } from "../MemoryAndRenderingSection/MemoryAn
 import { ElementTimingSection } from "../ElementTimingSection/ElementTimingSection"
 
 // ============================================================================
+// Section ordering & drag-and-drop types
+// ============================================================================
+
+const SECTION_IDS = [
+  "frame-timing",
+  "input",
+  "main-thread",
+  "loaf",
+  "layout",
+  "memory",
+  "element-timing"
+] as const
+
+type SectionId = (typeof SECTION_IDS)[number]
+
+// ============================================================================
 // Styled Components
 // ============================================================================
 
@@ -46,8 +62,17 @@ const SideToolbar = styled.div(({ theme }) => ({
 const SectionsGrid = styled.div({
   display: "grid",
   gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-  gap: "4px"
+  gap: "4px",
+  alignItems: "start"
 })
+
+const DragWrapper = styled.div<{ isDragOver: boolean }>(({ theme, isDragOver }) => ({
+  borderRadius: theme.appBorderRadius,
+  transition: "box-shadow 0.1s ease",
+  ...(isDragOver && {
+    boxShadow: `0 0 0 2px ${theme.color.secondary}`
+  })
+}))
 
 export const EmptyState = styled.div(({ theme }) => ({
   padding: "24px",
@@ -120,6 +145,12 @@ export function ConnectedPanelContent({ storyId: _storyId }: { storyId: string }
   const [state, dispatch] = React.useReducer(panelReducer, INITIAL_STATE)
   const { previewInitialized } = useStorybookState()
 
+  // Section order and collapse state
+  const [order, setOrder] = React.useState<SectionId[]>([...SECTION_IDS])
+  const [collapsed, setCollapsed] = React.useState<Set<SectionId>>(new Set())
+  const [dragOverId, setDragOverId] = React.useState<SectionId | null>(null)
+  const dragRef = React.useRef<SectionId | null>(null)
+
   const isConnected = () => state.status === "connected"
 
   const emit = useChannel({
@@ -164,6 +195,67 @@ export function ConnectedPanelContent({ storyId: _storyId }: { storyId: string }
     [emit]
   )
 
+  const handleToggle = React.useCallback((id: SectionId) => {
+    setCollapsed((prev) => {
+      const isNowCollapsed = !prev.has(id)
+      const next = new Set(prev)
+      if (isNowCollapsed) {
+        next.add(id)
+        // Move collapsed section to the end of the order
+        setOrder((prevOrder) => {
+          const without = prevOrder.filter((x) => x !== id)
+          return [...without, id]
+        })
+      } else {
+        next.delete(id)
+        // Move expanded section before the first collapsed one
+        setOrder((prevOrder) => {
+          const without = prevOrder.filter((x) => x !== id)
+          const firstCollapsedIdx = without.findIndex((x) => next.has(x))
+          if (firstCollapsedIdx === -1) return [...without, id]
+          const result = [...without]
+          result.splice(firstCollapsedIdx, 0, id)
+          return result
+        })
+      }
+      return next
+    })
+  }, [])
+
+  const handleDragStart = React.useCallback((id: SectionId) => {
+    dragRef.current = id
+  }, [])
+
+  const handleDragOver = React.useCallback((e: React.DragEvent, id: SectionId) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = "move"
+    if (dragRef.current !== id) setDragOverId(id)
+  }, [])
+
+  const handleDrop = React.useCallback((e: React.DragEvent, targetId: SectionId) => {
+    e.preventDefault()
+    const sourceId = dragRef.current
+    if (!sourceId || sourceId === targetId) {
+      setDragOverId(null)
+      return
+    }
+    setOrder((prev) => {
+      const next = [...prev]
+      const fromIdx = next.indexOf(sourceId)
+      const toIdx = next.indexOf(targetId)
+      next.splice(fromIdx, 1)
+      next.splice(toIdx, 0, sourceId)
+      return next
+    })
+    setDragOverId(null)
+    dragRef.current = null
+  }, [])
+
+  const handleDragEnd = React.useCallback(() => {
+    setDragOverId(null)
+    dragRef.current = null
+  }, [])
+
   if (state.status !== "connected") {
     if (state.status === "error") {
       return (
@@ -195,11 +287,16 @@ export function ConnectedPanelContent({ storyId: _storyId }: { storyId: string }
   }
 
   const { metrics } = state
-  return (
-    <PanelWrapper>
-      <ContentArea>
-        <SectionsGrid>
+
+  const renderSection = (id: SectionId) => {
+    const isCollapsed = collapsed.has(id)
+    const onToggle = () => handleToggle(id)
+    switch (id) {
+      case "frame-timing":
+        return (
           <FrameTimingSection
+            collapsed={isCollapsed}
+            onToggle={onToggle}
             fps={metrics.fps}
             fpsHistory={metrics.fpsHistory}
             frameTime={metrics.frameTime}
@@ -212,7 +309,12 @@ export function ConnectedPanelContent({ storyId: _storyId }: { storyId: string }
             maxPaintTime={metrics.maxPaintTime}
             paintJitter={metrics.paintJitter}
           />
+        )
+      case "input":
+        return (
           <InputSection
+            collapsed={isCollapsed}
+            onToggle={onToggle}
             inputLatency={metrics.inputLatency}
             maxInputLatency={metrics.maxInputLatency}
             eventTimingSupported={metrics.eventTimingSupported}
@@ -224,14 +326,24 @@ export function ConnectedPanelContent({ storyId: _storyId }: { storyId: string }
             slowestInteraction={metrics.slowestInteraction}
             onInspectElement={handleInspectElement}
           />
+        )
+      case "main-thread":
+        return (
           <MainThreadSection
+            collapsed={isCollapsed}
+            onToggle={onToggle}
             longTasks={metrics.longTasks}
             longestTask={metrics.longestTask}
             totalBlockingTime={metrics.totalBlockingTime}
             thrashingScore={metrics.thrashingScore}
             domMutationsPerFrame={metrics.domMutationsPerFrame}
           />
+        )
+      case "loaf":
+        return (
           <LoAFSection
+            collapsed={isCollapsed}
+            onToggle={onToggle}
             loafSupported={metrics.loafSupported}
             loafCount={metrics.loafCount}
             totalLoafBlockingDuration={metrics.totalLoafBlockingDuration}
@@ -242,7 +354,12 @@ export function ConnectedPanelContent({ storyId: _storyId }: { storyId: string }
             loafsWithScripts={metrics.loafsWithScripts}
             worstLoaf={metrics.worstLoaf}
           />
+        )
+      case "layout":
+        return (
           <LayoutAndInternalsSection
+            collapsed={isCollapsed}
+            onToggle={onToggle}
             layoutShiftScore={metrics.layoutShiftScore}
             layoutShiftCount={metrics.layoutShiftCount}
             currentSessionCLS={metrics.currentSessionCLS}
@@ -251,7 +368,12 @@ export function ConnectedPanelContent({ storyId: _storyId }: { storyId: string }
             cssVarChanges={metrics.cssVarChanges}
             inputJitter={metrics.inputJitter}
           />
+        )
+      case "memory":
+        return (
           <MemoryAndRenderingSection
+            collapsed={isCollapsed}
+            onToggle={onToggle}
             memoryUsedMB={metrics.memoryUsedMB}
             memoryDeltaMB={metrics.memoryDeltaMB}
             peakMemoryMB={metrics.peakMemoryMB}
@@ -261,11 +383,38 @@ export function ConnectedPanelContent({ storyId: _storyId }: { storyId: string }
             paintCount={metrics.paintCount}
             compositorLayers={metrics.compositorLayers}
           />
+        )
+      case "element-timing":
+        return (
           <ElementTimingSection
+            collapsed={isCollapsed}
+            onToggle={onToggle}
             elementTimingCount={metrics.elementTimingCount}
             largestElementRenderTime={metrics.largestElementRenderTime}
             elementTimings={metrics.elementTimings}
           />
+        )
+    }
+  }
+
+  return (
+    <PanelWrapper>
+      <ContentArea>
+        <SectionsGrid>
+          {order.map((id) => (
+            <DragWrapper
+              key={id}
+              draggable
+              isDragOver={dragOverId === id}
+              onDragStart={() => handleDragStart(id)}
+              onDragOver={(e) => handleDragOver(e, id)}
+              onDrop={(e) => handleDrop(e, id)}
+              onDragEnd={handleDragEnd}
+              onDragLeave={() => setDragOverId(null)}
+            >
+              {renderSection(id)}
+            </DragWrapper>
+          ))}
         </SectionsGrid>
       </ContentArea>
       <SideToolbar>

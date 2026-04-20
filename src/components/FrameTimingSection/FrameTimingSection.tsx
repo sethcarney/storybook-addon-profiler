@@ -17,7 +17,9 @@ export const FrameTimingSection = React.memo(function FrameTimingSection({
   frameStability,
   paintTime,
   maxPaintTime,
-  paintJitter
+  paintJitter,
+  collapsed,
+  onToggle
 }: {
   fps: number
   fpsHistory: number[]
@@ -30,6 +32,8 @@ export const FrameTimingSection = React.memo(function FrameTimingSection({
   paintTime: number
   maxPaintTime: number
   paintJitter: number
+  collapsed?: boolean
+  onToggle?: () => void
 }) {
   const fpsStatus = getStatusVariant(fps, THRESHOLDS.FPS_GOOD, THRESHOLDS.FPS_WARNING, true)
   const droppedStatus =
@@ -39,7 +43,7 @@ export const FrameTimingSection = React.memo(function FrameTimingSection({
   const paintJitterStatus = getZeroIsGoodStatus(paintJitter)
 
   return (
-    <MetricsSection icon="📊" title="Frame Timing">
+    <MetricsSection icon="📊" title="Frame Timing" collapsed={collapsed} onToggle={onToggle}>
       <Metric
         label="FPS"
         tooltip="Frames per second. Target: 60fps. Below 30 causes visible stuttering."

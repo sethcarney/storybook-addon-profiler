@@ -1,10 +1,12 @@
 import React from "react"
 import { styled } from "storybook/theming"
 
-const Section = styled.section(({ theme }) => ({
+const Section = styled.section<{ isDragOver?: boolean }>(({ theme, isDragOver }) => ({
   background: theme.background.app,
   borderRadius: theme.appBorderRadius,
-  border: `1px solid ${theme.appBorderColor}`
+  border: `1px solid ${isDragOver ? theme.color.secondary : theme.appBorderColor}`,
+  transition: "border-color 0.1s ease",
+  outline: isDragOver ? `1px solid ${theme.color.secondary}` : "none"
 }))
 
 const SectionHeader = styled.header<{ clickable?: boolean }>(({ theme, clickable }) => ({
@@ -17,6 +19,17 @@ const SectionHeader = styled.header<{ clickable?: boolean }>(({ theme, clickable
   cursor: clickable ? "pointer" : "default",
   userSelect: "none" as const,
   "&:hover": clickable ? { background: theme.background.hoverable } : {}
+}))
+
+const DragHandle = styled.span(({ theme }) => ({
+  cursor: "grab",
+  color: theme.color.mediumdark,
+  opacity: 0.35,
+  fontSize: "11px",
+  lineHeight: 1,
+  flexShrink: 0,
+  marginRight: "1px",
+  "&:hover": { opacity: 0.7 }
 }))
 
 const CollapseToggle = styled.span<{ collapsed: boolean }>(({ theme, collapsed }) => ({
@@ -51,17 +64,28 @@ export const MetricsSection = React.memo(function MetricsSection({
   icon,
   title,
   children,
-  defaultCollapsed = false
+  defaultCollapsed = false,
+  collapsed: controlledCollapsed,
+  onToggle,
+  isDragOver
 }: {
   icon: string
   title: string
   children: React.ReactNode
   defaultCollapsed?: boolean
+  collapsed?: boolean
+  onToggle?: () => void
+  isDragOver?: boolean
 }) {
-  const [collapsed, setCollapsed] = React.useState(defaultCollapsed)
+  const [internalCollapsed, setInternalCollapsed] = React.useState(defaultCollapsed)
+  const isControlled = controlledCollapsed !== undefined
+  const collapsed = isControlled ? controlledCollapsed : internalCollapsed
+  const handleToggle = isControlled ? onToggle! : () => setInternalCollapsed((c) => !c)
+
   return (
-    <Section>
-      <SectionHeader clickable onClick={() => setCollapsed((c) => !c)}>
+    <Section isDragOver={isDragOver}>
+      <SectionHeader clickable onClick={handleToggle}>
+        <DragHandle title="Drag to reorder">⠿</DragHandle>
         <SectionIcon>{icon}</SectionIcon>
         <SectionTitle>{title}</SectionTitle>
         <CollapseToggle collapsed={collapsed}>▼</CollapseToggle>

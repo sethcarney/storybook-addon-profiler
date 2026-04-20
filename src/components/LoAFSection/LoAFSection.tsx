@@ -15,7 +15,9 @@ export const LoAFSection = React.memo(function LoAFSection({
   avgLoafDuration,
   p95LoafDuration,
   loafsWithScripts,
-  worstLoaf
+  worstLoaf,
+  collapsed,
+  onToggle
 }: {
   loafSupported: boolean
   loafCount: number
@@ -26,10 +28,12 @@ export const LoAFSection = React.memo(function LoAFSection({
   p95LoafDuration: number
   loafsWithScripts: number
   worstLoaf: LoafDetails | null
+  collapsed?: boolean
+  onToggle?: () => void
 }) {
   if (!loafSupported) {
     return (
-      <MetricsSection icon="🎞️" title="Long Animation Frames">
+      <MetricsSection icon="🎞️" title="Long Animation Frames" collapsed={collapsed} onToggle={onToggle}>
         <Metric label="Status" tooltip="Long Animation Frames API requires Chrome 123+">
           <StatusBadge variant="neutral">
             <span>⚠️ Not supported</span>
@@ -40,7 +44,7 @@ export const LoAFSection = React.memo(function LoAFSection({
   }
 
   return (
-    <MetricsSection icon="🎞️" title="Long Animation Frames">
+    <MetricsSection icon="🎞️" title="Long Animation Frames" collapsed={collapsed} onToggle={onToggle}>
       <Metric
         label="LoAF Count"
         tooltip="Animation frames exceeding 50ms."
