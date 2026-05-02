@@ -12,7 +12,9 @@ export const LayoutAndInternalsSection = React.memo(function LayoutAndInternalsS
   forcedReflowCount,
   styleWrites,
   cssVarChanges,
-  inputJitter
+  inputJitter,
+  collapsed,
+  onToggle
 }: {
   layoutShiftScore: number
   layoutShiftCount: number
@@ -21,6 +23,8 @@ export const LayoutAndInternalsSection = React.memo(function LayoutAndInternalsS
   styleWrites: number
   cssVarChanges: number
   inputJitter: number
+  collapsed?: boolean
+  onToggle?: () => void
 }) {
   const clsStatus = getStatusVariant(layoutShiftScore, THRESHOLDS.CLS_GOOD, THRESHOLDS.CLS_WARNING)
   const detailParts: string[] = []
@@ -28,7 +32,7 @@ export const LayoutAndInternalsSection = React.memo(function LayoutAndInternalsS
   if (currentSessionCLS > 0) detailParts.push(`session: ${formatScore(currentSessionCLS)}`)
 
   return (
-    <MetricsSection icon="📐" title="Layout & Stability">
+    <MetricsSection icon="📐" title="Layout & Stability" collapsed={collapsed} onToggle={onToggle}>
       <Metric
         label="CLS"
         isWebVital

@@ -96,7 +96,9 @@ export const InputSection = React.memo(function InputSection({
   firstInputType,
   lastInteraction,
   slowestInteraction,
-  onInspectElement
+  onInspectElement,
+  collapsed,
+  onToggle
 }: {
   inputLatency: number
   maxInputLatency: number
@@ -108,6 +110,8 @@ export const InputSection = React.memo(function InputSection({
   lastInteraction: InteractionInfo | null
   slowestInteraction: InteractionInfo | null
   onInspectElement: (s: string) => void
+  collapsed?: boolean
+  onToggle?: () => void
 }) {
   const inputStatus = getStatusVariant(inputLatency, THRESHOLDS.INPUT_LATENCY_GOOD, THRESHOLDS.INPUT_LATENCY_WARNING)
   const inpStatus = getStatusVariant(inpMs, THRESHOLDS.INP_GOOD, THRESHOLDS.INP_WARNING)
@@ -161,7 +165,7 @@ export const InputSection = React.memo(function InputSection({
   }
 
   return (
-    <MetricsSection icon="👇" title="Input Responsiveness">
+    <MetricsSection icon="👇" title="Input Responsiveness" collapsed={collapsed} onToggle={onToggle}>
       <Metric
         label="INP"
         isWebVital

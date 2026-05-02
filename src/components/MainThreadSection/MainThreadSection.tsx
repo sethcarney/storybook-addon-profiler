@@ -9,16 +9,20 @@ export const MainThreadSection = React.memo(function MainThreadSection({
   longestTask,
   totalBlockingTime,
   thrashingScore,
-  domMutationsPerFrame
+  domMutationsPerFrame,
+  collapsed,
+  onToggle
 }: {
   longTasks: number
   longestTask: number
   totalBlockingTime: number
   thrashingScore: number
   domMutationsPerFrame: number
+  collapsed?: boolean
+  onToggle?: () => void
 }) {
   return (
-    <MetricsSection icon="⏱️" title="Main Thread">
+    <MetricsSection icon="⏱️" title="Main Thread" collapsed={collapsed} onToggle={onToggle}>
       <Metric
         label="Long Tasks"
         tooltip="Tasks blocking main thread >50ms."

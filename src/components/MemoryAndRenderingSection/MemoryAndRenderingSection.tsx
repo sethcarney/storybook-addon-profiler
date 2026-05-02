@@ -14,7 +14,9 @@ export const MemoryAndRenderingSection = React.memo(function MemoryAndRenderingS
   gcPressure,
   domElements,
   paintCount,
-  compositorLayers
+  compositorLayers,
+  collapsed,
+  onToggle
 }: {
   memoryUsedMB: number | null
   memoryDeltaMB: number | null
@@ -24,6 +26,8 @@ export const MemoryAndRenderingSection = React.memo(function MemoryAndRenderingS
   domElements: number | null
   paintCount: number
   compositorLayers: number | null
+  collapsed?: boolean
+  onToggle?: () => void
 }) {
   const gcStatus = getStatusVariant(gcPressure, 0, THRESHOLDS.GC_PRESSURE_WARNING)
   const layerStatus =
@@ -47,7 +51,7 @@ export const MemoryAndRenderingSection = React.memo(function MemoryAndRenderingS
 
   if (memoryUsedMB === null) {
     return (
-      <MetricsSection icon="🧠" title="Memory & Rendering">
+      <MetricsSection icon="🧠" title="Memory & Rendering" collapsed={collapsed} onToggle={onToggle}>
         <Metric label="Heap">
           <SecondaryValue>Not available (Chrome only)</SecondaryValue>
         </Metric>
@@ -62,7 +66,7 @@ export const MemoryAndRenderingSection = React.memo(function MemoryAndRenderingS
   }
 
   return (
-    <MetricsSection icon="🧠" title="Memory & Rendering">
+    <MetricsSection icon="🧠" title="Memory & Rendering" collapsed={collapsed} onToggle={onToggle}>
       <Metric label="Heap" tooltip="Current JS heap size." sparkline={<Sparkline data={memoryHistory} />}>
         <span>
           {formatMb(memoryUsedMB)}MB

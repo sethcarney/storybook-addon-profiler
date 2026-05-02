@@ -9,15 +9,19 @@ import type { ElementTimingDisplay } from "../../performance-types"
 export const ElementTimingSection = React.memo(function ElementTimingSection({
   elementTimingCount,
   largestElementRenderTime,
-  elementTimings
+  elementTimings,
+  collapsed,
+  onToggle
 }: {
   elementTimingCount: number
   largestElementRenderTime: number
   elementTimings: ElementTimingDisplay[]
+  collapsed?: boolean
+  onToggle?: () => void
 }) {
   if (elementTimingCount === 0) {
     return (
-      <MetricsSection icon="🎯" title="Element Timing">
+      <MetricsSection icon="🎯" title="Element Timing" collapsed={collapsed} onToggle={onToggle}>
         <Metric label="No elements tracked" tooltip="Add data-profiler attribute to elements you want to time">
           <Code style={{ fontSize: "10px" }}>data-profiler="name"</Code>
         </Metric>
@@ -26,7 +30,7 @@ export const ElementTimingSection = React.memo(function ElementTimingSection({
   }
   const sortedElements = [...elementTimings].sort((a, b) => b.renderTime - a.renderTime)
   return (
-    <MetricsSection icon="🎯" title="Element Timing">
+    <MetricsSection icon="🎯" title="Element Timing" collapsed={collapsed} onToggle={onToggle}>
       <Metric label="Elements" tooltip="Number of data-profiler elements tracked">
         <StatusBadge variant="success">
           <span>{"📍 "}</span>
