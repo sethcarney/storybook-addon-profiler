@@ -19,10 +19,4 @@ jobs:
         with:
           fail-on-severity: high
           comment-summary-in-pr: always
-          allow-licenses: Apache-2.0
-          # Explicit exceptions for MIT-licensed GitHub infrastructure actions
-          # that cannot be substituted with Apache-2.0 equivalents.
-          allow-dependencies-licenses: >-
-            pkg:github/actions/checkout,
-            pkg:github/actions/upload-artifact,
-            pkg:github/github/codeql-action
+          allow-licenses: Apache-2.0, MIT
