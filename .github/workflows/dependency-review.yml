@@ -18,7 +18,5 @@ jobs:
         uses: actions/dependency-review-action@v4
         with:
           fail-on-severity: high
-          # Post a summary comment on the PR
           comment-summary-in-pr: always
-          # Deny packages with known license incompatibilities
-          deny-licenses: AGPL-3.0, GPL-2.0, GPL-3.0
+          allow-licenses: Apache-2.0
