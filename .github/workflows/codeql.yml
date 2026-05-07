@@ -8,6 +8,12 @@ on:
     # Weekly on Thursday at 10:45 UTC
     - cron: "45 10 * * 4"
 
+# Cancel any in-progress run for the same branch so stale results from
+# a previous commit never overwrite a newer passing run.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
