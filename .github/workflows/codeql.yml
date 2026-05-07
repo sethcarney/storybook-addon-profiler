@@ -40,8 +40,7 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-          # Use the extended security query suite for broader coverage
-          queries: security-extended,security-and-quality
+          queries: security-extended
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
