@@ -17,15 +17,7 @@ import { ElementTimingSection } from "../ElementTimingSection/ElementTimingSecti
 // Section ordering & drag-and-drop types
 // ============================================================================
 
-const SECTION_IDS = [
-  "frame-timing",
-  "input",
-  "main-thread",
-  "loaf",
-  "layout",
-  "memory",
-  "element-timing"
-] as const
+const SECTION_IDS = ["frame-timing", "input", "main-thread", "loaf", "layout", "memory", "element-timing"] as const
 
 type SectionId = (typeof SECTION_IDS)[number]
 
