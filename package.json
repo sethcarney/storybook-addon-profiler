@@ -76,6 +76,7 @@
     "@angular/core": "^21.1.5",
     "@angular/platform-browser": "^21.1.5",
     "@angular/platform-browser-dynamic": "^21.1.5",
+    "@changesets/cli": "^2.31.0",
     "@storybook/angular": "^10.2.10",
     "@storybook/icons": "^2.0.1",
     "@storybook/react": "^10.2.10",
