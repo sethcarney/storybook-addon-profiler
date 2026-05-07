@@ -9,20 +9,21 @@ concurrency:
   group: release
   cancel-in-progress: false
 
-permissions:
-  contents: write # push git tag
-  id-token: write # npm Trusted Publishing (OIDC)
+permissions: read-all
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # push git tag
+      id-token: write # npm Trusted Publishing (OIDC)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           fetch-depth: 0
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: latest
 
@@ -48,17 +49,6 @@ jobs:
         if: steps.check.outputs.skip == 'false'
         run: bun run build
 
-      - name: Set up Node for npm publish
-        if: steps.check.outputs.skip == 'false'
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          registry-url: https://registry.npmjs.org
-
-      - name: Publish to npm
-        if: steps.check.outputs.skip == 'false'
-        run: npm publish --provenance
-
       - name: Tag release
         if: steps.check.outputs.skip == 'false'
         run: |
@@ -70,3 +60,14 @@ jobs:
         run: gh release create "v${{ steps.pkg.outputs.version }}" --generate-notes --title "v${{ steps.pkg.outputs.version }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node for npm publish
+        if: steps.check.outputs.skip == 'false'
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: lts/*
+          registry-url: https://registry.npmjs.org
+
+      - name: Publish to npm
+        if: steps.check.outputs.skip == 'false'
+        run: npm publish --provenance
