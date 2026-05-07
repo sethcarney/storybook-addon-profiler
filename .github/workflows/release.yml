@@ -40,6 +40,8 @@ jobs:
         run: bunx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          # Attach SLSA provenance attestation to every npm publish
+          # Trusted Publishing: npm accepts an OIDC token from this workflow
+          # instead of a long-lived NPM_TOKEN. Configure the trusted publisher
+          # on npmjs.com: package → Settings → Trusted Publishing → add this
+          # repo + release.yml. No secret needed.
           NPM_CONFIG_PROVENANCE: "true"
