@@ -10,8 +10,8 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write  # push git tag
-  id-token: write  # npm Trusted Publishing (OIDC)
+  contents: write # push git tag
+  id-token: write # npm Trusted Publishing (OIDC)
 
 jobs:
   release:
