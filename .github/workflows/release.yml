@@ -48,11 +48,16 @@ jobs:
         if: steps.check.outputs.skip == 'false'
         run: bun run build
 
+      - name: Set up Node for npm publish
+        if: steps.check.outputs.skip == 'false'
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          registry-url: https://registry.npmjs.org
+
       - name: Publish to npm
         if: steps.check.outputs.skip == 'false'
         run: npm publish --provenance
-        env:
-          NPM_CONFIG_PROVENANCE: "true"
 
       - name: Tag release
         if: steps.check.outputs.skip == 'false'
