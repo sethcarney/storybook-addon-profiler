@@ -3,6 +3,13 @@ name: Release
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "**/*.md"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Version to release (e.g. 1.2.3) — skips the duplicate check"
+        required: false
 
 # One release at a time; never cancel an in-flight publish
 concurrency:
@@ -16,8 +23,13 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     permissions:
-      contents: write # push git tag
-      id-token: write # npm Trusted Publishing (OIDC)
+      contents: write   # push git tag + upload release assets
+      id-token: write   # OIDC for cosign keyless signing + npm provenance
+    outputs:
+      version: ${{ steps.pkg.outputs.version }}
+      hashes: ${{ steps.hash.outputs.hashes }}
+      release_exists: ${{ steps.check.outputs.skip }}
+
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -49,6 +61,33 @@ jobs:
         if: steps.check.outputs.skip == 'false'
         run: bun run build
 
+      - name: Pack npm tarball
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          mkdir -p dist-release
+          npm pack --pack-destination dist-release
+          mv dist-release/*.tgz dist-release/storybook-addon-profiler.tgz
+
+      - name: Generate checksums
+        id: hash
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          cd dist-release
+          sha256sum storybook-addon-profiler.tgz > sha256sums.txt
+          echo "hashes=$(sha256sum storybook-addon-profiler.tgz | base64 -w0)" >> $GITHUB_OUTPUT
+
+      - name: Install cosign
+        if: steps.check.outputs.skip == 'false'
+        uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3.9.1
+
+      - name: Sign tarball
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          cosign sign-blob --yes dist-release/storybook-addon-profiler.tgz \
+            --bundle dist-release/storybook-addon-profiler.tgz.bundle \
+            --output-signature dist-release/storybook-addon-profiler.tgz.sig \
+            --output-certificate dist-release/storybook-addon-profiler.tgz.pem
+
       - name: Tag release
         if: steps.check.outputs.skip == 'false'
         run: |
@@ -57,7 +96,15 @@ jobs:
 
       - name: Create GitHub release
         if: steps.check.outputs.skip == 'false'
-        run: gh release create "v${{ steps.pkg.outputs.version }}" --generate-notes --title "v${{ steps.pkg.outputs.version }}"
+        run: |
+          gh release create "v${{ steps.pkg.outputs.version }}" \
+            --generate-notes \
+            --title "v${{ steps.pkg.outputs.version }}" \
+            dist-release/storybook-addon-profiler.tgz \
+            dist-release/storybook-addon-profiler.tgz.sig \
+            dist-release/storybook-addon-profiler.tgz.pem \
+            dist-release/storybook-addon-profiler.tgz.bundle \
+            dist-release/sha256sums.txt
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -71,3 +118,18 @@ jobs:
       - name: Publish to npm
         if: steps.check.outputs.skip == 'false'
         run: npm publish --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  provenance:
+    needs: [release]
+    if: needs.release.outputs.release_exists == 'false'
+    permissions:
+      actions: read
+      id-token: write
+      contents: write
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    with:
+      base64-subjects: "${{ needs.release.outputs.hashes }}"
+      upload-assets: true
+      upload-tag-name: "v${{ needs.release.outputs.version }}"
