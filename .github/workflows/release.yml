@@ -10,10 +10,10 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write      # push tags + CHANGELOG commit
-  issues: write        # comment on resolved issues
+  contents: write # push tags + CHANGELOG commit
+  issues: write # comment on resolved issues
   pull-requests: write # comment on merged PRs
-  id-token: write      # SLSA provenance via npm
+  id-token: write # SLSA provenance via npm
 
 jobs:
   release:

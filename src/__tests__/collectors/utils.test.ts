@@ -6,7 +6,7 @@ import {
   computePercentile,
   computeP95,
   addToWindow,
-  updateMaxWithDecay,
+  updateMaxWithDecay
 } from "../../collectors/utils"
 
 describe("computeAverage", () => {
