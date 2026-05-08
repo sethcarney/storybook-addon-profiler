@@ -2,9 +2,12 @@
 
 [![npm](https://img.shields.io/npm/v/storybook-addon-profiler)](https://www.npmjs.com/package/storybook-addon-profiler)
 [![license](https://img.shields.io/npm/l/storybook-addon-profiler)](LICENSE)
+[![CI](https://github.com/sethcarney/storybook-addon-profiler/actions/workflows/ci.yml/badge.svg)](https://github.com/sethcarney/storybook-addon-profiler/actions/workflows/ci.yml)
+[![npm downloads](https://img.shields.io/npm/dm/storybook-addon-profiler)](https://www.npmjs.com/package/storybook-addon-profiler)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/sethcarney/storybook-addon-profiler/badge)](https://securityscorecards.dev/viewer/?uri=github.com/sethcarney/storybook-addon-profiler)
 
-Real-time browser performance metrics inside your Storybook panel. Works with every Storybook framework — React, Vue, Angular, Svelte, and more.
+Real-time browser performance metrics inside your Storybook panel. Works with every Storybook framework: React, Vue, Angular, Svelte, Preact, HTML, web-components, and Solid.
 
 ![Performance Profiler Demo](https://raw.githubusercontent.com/sethcarney/storybook-addon-profiler/main/demo.gif)
 
@@ -42,10 +45,10 @@ The panel updates every 50 ms while a story is active. Metrics are grouped into 
 | **Main Thread**            | Long Tasks, Total Blocking Time (TBT), DOM thrashing, mutation churn             |
 | **Long Animation Frames**  | LoAF count, total blocking duration, P95, top script attribution _(Chrome 123+)_ |
 | **Layout & Stability**     | CLS, forced reflows, style writes, CSS variable mutations                        |
-| **Memory & Rendering**     | JS heap, heap delta, GC pressure, DOM nodes, compositor layers _(Chrome)_        |
-| **Element Timing**         | Per-element time-to-DOM for elements marked `data-profiler="…"`                  |
+| **Memory & Rendering**     | JS heap, heap delta, GC pressure, DOM nodes, compositor layers _(Chromium)_      |
+| **Element Timing**         | Per-element time-to-DOM for elements marked `data-profiler="..."`                |
 
-Values are color-coded against Web Vitals thresholds — green / amber / red — so slow paths are immediately visible.
+Values are color-coded against Web Vitals thresholds (green / amber / red) so slow paths are immediately visible.
 
 ### Inspect
 
@@ -62,8 +65,8 @@ Hit the reset button in the panel toolbar to clear all collector baselines mid-s
 Add the `data-profiler` attribute to any element you want to track individually:
 
 ```html
-<img data-profiler="hero-image" src="…" />
-<div data-profiler="above-fold-content">…</div>
+<img data-profiler="hero-image" src="..." />
+<div data-profiler="above-fold-content">...</div>
 ```
 
 In React/TSX stories the attribute is valid JSX out of the box:
@@ -73,7 +76,7 @@ In React/TSX stories the attribute is valid JSX out of the box:
 <MyComponent data-profiler="my-component" />
 ```
 
-The **Element Timing** section lists each element's time from story render start to DOM insertion, sorted slowest first. Deduplication is by name — only the first appearance of each name is recorded per render.
+The **Element Timing** section lists each element's time from story render start to DOM insertion, sorted slowest first. Deduplication is by name; only the first appearance of each name is recorded per render.
 
 ---
 
@@ -94,14 +97,14 @@ export default {
 
 ## Browser compatibility
 
-| Feature                           | Chrome/Edge | Firefox | Safari |
-| --------------------------------- | ----------- | ------- | ------ |
-| Core metrics (FPS, TBT, CLS, INP) | ✅          | ✅      | ✅     |
-| Long Animation Frames             | ✅ (123+)   | ❌      | ❌     |
-| JS heap memory                    | ✅          | ❌      | ❌     |
-| Element Timing                    | ✅          | ❌      | ❌     |
+| Feature                           | Chrome     | Edge       | Brave      | Firefox | Safari |
+| --------------------------------- | ---------- | ---------- | ---------- | ------- | ------ |
+| Core metrics (FPS, TBT, CLS, INP) | ✅         | ✅         | ✅         | ✅      | ✅     |
+| Long Animation Frames             | ✅ (123+)  | ✅ (123+)  | ✅ (123+)  | ❌      | ❌     |
+| JS heap memory                    | ✅         | ✅         | ✅         | ❌      | ❌     |
+| Element Timing                    | ✅         | ✅         | ✅         | ❌      | ❌     |
 
-All collectors degrade gracefully — unsupported metrics show a "not available" badge rather than erroring.
+All collectors degrade gracefully; unsupported metrics show a "not available" badge rather than erroring.
 
 ---
 
@@ -121,4 +124,4 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for a full breakdown of the collector s
 
 ## License
 
-MIT
+Apache 2.0. See [LICENSE](./LICENSE) for details.
