@@ -146,5 +146,3 @@ jobs:
 
       - name: Publish to npm
         run: npm publish dist-release/storybook-addon-profiler.tgz --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
