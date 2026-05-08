@@ -1,7 +1,7 @@
 # storybook-addon-profiler
 
 [![npm](https://img.shields.io/npm/v/storybook-addon-profiler)](https://www.npmjs.com/package/storybook-addon-profiler)
-[![license](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
+[![license](https://img.shields.io/npm/l/storybook-addon-profiler)](LICENSE)
 [![CI](https://github.com/sethcarney/storybook-addon-profiler/actions/workflows/ci.yml/badge.svg)](https://github.com/sethcarney/storybook-addon-profiler/actions/workflows/ci.yml)
 [![npm downloads](https://img.shields.io/npm/dm/storybook-addon-profiler)](https://www.npmjs.com/package/storybook-addon-profiler)
 [![bundle size](https://img.shields.io/bundlephobia/minzip/storybook-addon-profiler)](https://bundlephobia.com/package/storybook-addon-profiler)
