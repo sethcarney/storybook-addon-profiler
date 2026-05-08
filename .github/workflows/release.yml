@@ -1,0 +1,150 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+
+# One release at a time; never cancel an in-flight publish
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions: read-all
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # push git tag + upload release assets
+      id-token: write # OIDC for cosign keyless signing
+    outputs:
+      version: ${{ steps.pkg.outputs.version }}
+      hashes: ${{ steps.hash.outputs.hashes }}
+      release_exists: ${{ steps.check.outputs.skip }}
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Read version from package.json
+        id: pkg
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Check whether this version has already been released
+        id: check
+        run: |
+          if git ls-remote --tags origin "refs/tags/v${{ steps.pkg.outputs.version }}" | grep -q .; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "v${{ steps.pkg.outputs.version }} already tagged — nothing to publish."
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "New version v${{ steps.pkg.outputs.version }} — publishing."
+          fi
+
+      - name: Build
+        if: steps.check.outputs.skip == 'false'
+        run: bun run build
+
+      - name: Pack npm tarball
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          mkdir -p dist-release
+          npm pack --pack-destination dist-release
+          mv dist-release/*.tgz dist-release/storybook-addon-profiler.tgz
+
+      - name: Generate checksums
+        id: hash
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          cd dist-release
+          sha256sum storybook-addon-profiler.tgz > sha256sums.txt
+          echo "hashes=$(sha256sum storybook-addon-profiler.tgz | base64 -w0)" >> $GITHUB_OUTPUT
+
+      - name: Install cosign
+        if: steps.check.outputs.skip == 'false'
+        uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3.9.1
+
+      - name: Sign tarball
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          cosign sign-blob --yes dist-release/storybook-addon-profiler.tgz \
+            --bundle dist-release/storybook-addon-profiler.tgz.bundle \
+            --output-signature dist-release/storybook-addon-profiler.tgz.sig \
+            --output-certificate dist-release/storybook-addon-profiler.tgz.pem
+
+      - name: Tag release
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          git tag "v${{ steps.pkg.outputs.version }}"
+          git push origin "v${{ steps.pkg.outputs.version }}"
+
+      - name: Create GitHub release
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          gh release create "v${{ steps.pkg.outputs.version }}" \
+            --generate-notes \
+            --title "v${{ steps.pkg.outputs.version }}" \
+            dist-release/storybook-addon-profiler.tgz \
+            dist-release/storybook-addon-profiler.tgz.sig \
+            dist-release/storybook-addon-profiler.tgz.pem \
+            dist-release/storybook-addon-profiler.tgz.bundle \
+            dist-release/sha256sums.txt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload tarball artifact for npm publish
+        if: steps.check.outputs.skip == 'false'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: npm-tarball
+          path: dist-release/storybook-addon-profiler.tgz
+          retention-days: 1
+
+  provenance:
+    needs: [release]
+    if: needs.release.outputs.release_exists == 'false'
+    permissions:
+      actions: read
+      id-token: write
+      contents: write
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    with:
+      base64-subjects: "${{ needs.release.outputs.hashes }}"
+      upload-assets: true
+      upload-tag-name: "v${{ needs.release.outputs.version }}"
+
+  npm-publish:
+    name: Publish to npm
+    needs: [release]
+    if: needs.release.outputs.release_exists == 'false'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # OIDC for npm provenance
+    steps:
+      - name: Download tarball artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: npm-tarball
+          path: dist-release
+
+      - name: Set up Node for npm publish
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: lts/*
+          registry-url: https://registry.npmjs.org
+
+      - name: Publish to npm
+        run: npm publish dist-release/storybook-addon-profiler.tgz --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
