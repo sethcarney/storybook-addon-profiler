@@ -1,7 +1,11 @@
 # storybook-addon-profiler
 
 [![npm](https://img.shields.io/npm/v/storybook-addon-profiler)](https://www.npmjs.com/package/storybook-addon-profiler)
-[![license](https://img.shields.io/npm/l/storybook-addon-profiler)](LICENSE)
+[![license](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
+[![CI](https://github.com/sethcarney/storybook-addon-profiler/actions/workflows/ci.yml/badge.svg)](https://github.com/sethcarney/storybook-addon-profiler/actions/workflows/ci.yml)
+[![npm downloads](https://img.shields.io/npm/dm/storybook-addon-profiler)](https://www.npmjs.com/package/storybook-addon-profiler)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/storybook-addon-profiler)](https://bundlephobia.com/package/storybook-addon-profiler)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/sethcarney/storybook-addon-profiler/badge)](https://securityscorecards.dev/viewer/?uri=github.com/sethcarney/storybook-addon-profiler)
 
 Real-time browser performance metrics inside your Storybook panel. Works with every Storybook framework — React, Vue, Angular, Svelte, and more.
@@ -121,4 +125,4 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for a full breakdown of the collector s
 
 ## License
 
-MIT
+Apache 2.0 — see [LICENSE](./LICENSE) for details.
