@@ -2,7 +2,7 @@
   "name": "storybook-addon-profiler",
   "description": "A performance profiler panel addon for Storybook — real-time FPS, INP, CLS, memory and more. Works with all Storybook frameworks.",
   "type": "module",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "license": "Apache-2.0",
   "keywords": [
     "storybook",
