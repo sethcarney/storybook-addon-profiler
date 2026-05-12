@@ -42,7 +42,7 @@ export const LayoutAndInternalsSection = React.memo(function LayoutAndInternalsS
         <StatusBadge variant={clsStatus}>
           {layoutShiftScore === 0
             ? "🎯 0"
-            : layoutShiftScore > 0.25
+            : layoutShiftScore > THRESHOLDS.CLS_WARNING
               ? `📦 ${formatScore(layoutShiftScore)}`
               : formatScore(layoutShiftScore)}
         </StatusBadge>

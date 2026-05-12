@@ -72,13 +72,14 @@ Entry: `src/manager.tsx` registers the panel via `addons.add()`.
 ```
 PerformancePanel
 └── PanelContent               (no-decorator / error / loading states)
-    └── ConnectedPanelContent  (channel wiring, reducer state)
+    └── ConnectedPanelContent  (channel wiring, reducer state, section ordering & DnD)
         ├── FrameTimingSection
         ├── InputSection
         ├── MainThreadSection
         ├── LoAFSection
         ├── LayoutAndInternalsSection
-        └── MemoryAndRenderingSection
+        ├── MemoryAndRenderingSection
+        └── ElementTimingSection
 ```
 
 All components live under `src/components/`. Each section is collapsible and renders `<Metric>` rows with optional `<Sparkline>` charts and `<StatusBadge>` color indicators.
@@ -96,12 +97,13 @@ The panel uses a simple reducer with these states:
 
 ### Channel subscriptions
 
-| Event                                  | Handler                                                |
-| -------------------------------------- | ------------------------------------------------------ |
-| `METRICS_UPDATE`                       | Dispatch `METRICS_RECEIVED` → re-render panel sections |
-| `storyRendered`                        | Emit `REQUEST_METRICS` to get an immediate snapshot    |
-| `storyArgsUpdated`                     | Emit `RESET` (args changed = new baseline)             |
-| `storyErrored` / `storyThrewException` | Dispatch error state                                   |
+| Event                                          | Handler                                                |
+| ---------------------------------------------- | ------------------------------------------------------ |
+| `METRICS_UPDATE`                               | Dispatch `METRICS_RECEIVED` → re-render panel sections |
+| `storyRendered` / `storyFinished`              | Emit `REQUEST_METRICS` to get an immediate snapshot    |
+| `storyArgsUpdated`                             | Emit `RESET` (args changed = new baseline)             |
+| `storyErrored` / `storyMissing`                | Dispatch error state                                   |
+| `storyThrewException` / `playFunctionThrewException` | Dispatch error state with message              |
 
 ---
 
