@@ -9,7 +9,7 @@ A Storybook panel addon that shows real-time browser performance metrics while v
 - **Runtime**: Bun (`bun run build`, `bun run dev`, etc. — no npm/node)
 - **Bundler**: tsup (wraps Rollup + esbuild), config in `tsup.config.ts`
 - **Language**: TypeScript + React (React is only used for the manager panel UI)
-- **Storybook version**: 8.x
+- **Storybook version**: 10.x (peer dep accepts `storybook: *`; minimum supported is 8+)
 
 ## Key Architecture
 
@@ -36,21 +36,20 @@ A Storybook panel addon that shows real-time browser performance metrics while v
 All collectors are pure Web API / passive observers — no framework dependencies:
 
 - `frame-timing-collector.ts` — rAF-based FPS and frame timing
-- `input-collector.ts` — EventTiming API for INP, FID, pointer latency
+- `input-collector.ts` — EventTiming API for INP/FID, plus a double-rAF pointer latency loop
 - `main-thread-collector.ts` — PerformanceObserver for Long Tasks / TBT
 - `long-animation-frame-collector.ts` — LoAF API (Chrome 123+)
 - `layout-shift-collector.ts` — CLS via PerformanceObserver
 - `memory-collector.ts` — `performance.memory` (Chrome only)
-- `paint-collector.ts` — paint count, compositor layers
-- `style-mutation-collector.ts` — MutationObserver for DOM/style churn
-- `forced-reflow-collector.ts` — detects forced synchronous layouts
-- `element-timing-collector.ts` — `elementtiming` attribute tracking
-- `react-profiler-collector.ts` — data store for React `<Profiler>` metrics; **passive** (receives no data unless manually fed via `reportRender`)
+- `paint-collector.ts` — paint count, script eval time, compositor layers
+- `style-mutation-collector.ts` — MutationObserver for DOM/style churn, thrashing detection
+- `forced-reflow-collector.ts` — patches layout-trigger getters on `HTMLElement.prototype`; uses a static registry so multiple instances share the patch and restore it on the last `stop()`
+- `element-timing-collector.ts` — MutationObserver for `data-profiler="name"` attribute tracking; deduplicates by name
+- `collector-manager.ts` — owns one of each collector, wires `style.onLayoutDirty` → `reflow.markLayoutDirty`, drives sparkline history
 
 ### Channel Events (`src/performance-types.ts` → `PERF_EVENTS`)
 
 - `METRICS_UPDATE` — preview → manager, all computed metrics
-- `PROFILER_UPDATE` — preview → manager, per-profiler React metrics
 - `REQUEST_METRICS` — manager → preview, ask for immediate update
 - `RESET` — manager → preview, reset all collectors
 - `INSPECT_ELEMENT` — manager → preview, highlight element by CSS selector
@@ -125,5 +124,7 @@ react, vue3, angular, svelte, preact, html, web-components, solid
 
 - The `.storybook/` config uses `@storybook/react-vite` — this is just for the **local dev environment**, not a requirement of the addon itself.
 - `manager.tsx` uses React + `storybook/internal/components` styled components — this is intentional and correct (manager UI is always React).
-- `preview.ts` uses `as any` cast on the decorator to satisfy `__definePreview`'s generic renderer type — this is expected because the decorator is intentionally renderer-agnostic.
+- `preview.ts` casts `withPerformanceMonitor as any` in its `decorators` array because the decorator is intentionally renderer-agnostic and Storybook's `DecoratorFunction` is generic over the framework renderer.
+- `src/index.ts` wraps the preview default export in `definePreview(...)` from `storybook/internal/csf` so it can be consumed via the public package entry. The actual auto-injection still goes through `previewAnnotations` in `src/preset.ts` pointing at `dist/preview.js`.
 - Avoid importing Storybook internal types in the preview code to reduce breakage across Storybook versions.
+- Number formatting goes through `src/panel/formatters.ts` (Intl-backed). `formatMb` and `formatMs` already include the unit suffix — do not append `MB`/`ms` manually at the call site.

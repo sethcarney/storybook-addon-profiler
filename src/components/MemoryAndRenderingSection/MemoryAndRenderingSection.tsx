@@ -69,12 +69,12 @@ export const MemoryAndRenderingSection = React.memo(function MemoryAndRenderingS
     <MetricsSection icon="🧠" title="Memory & Rendering" collapsed={collapsed} onToggle={onToggle}>
       <Metric label="Heap" tooltip="Current JS heap size." sparkline={<Sparkline data={memoryHistory} />}>
         <span>
-          {formatMb(memoryUsedMB)}MB
+          {formatMb(memoryUsedMB)}
           {deltaText && <StatusBadge variant={deltaStatus}> ({deltaText})</StatusBadge>}
         </span>
       </Metric>
       <Metric label="Peak" tooltip="Peak heap memory.">
-        {peakMemoryMB !== null ? `${formatMb(peakMemoryMB)}MB` : "—"}
+        {peakMemoryMB !== null ? formatMb(peakMemoryMB) : "—"}
       </Metric>
       <Metric label="DOM Nodes" tooltip="Current DOM element count.">
         {domElements !== null ? formatNumber(domElements) : "—"}

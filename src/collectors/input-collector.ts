@@ -60,6 +60,8 @@ export class InputCollector implements MetricCollector<InputMetrics> {
   #firstInputObserver: PerformanceObserver | null = null
   #eventTimingSupported: boolean
   #boundHandlePointerMove: (event: PointerEvent) => void
+  #pendingRafIds = new Set<number>()
+  #running = false
 
   constructor() {
     this.#boundHandlePointerMove = this.#handlePointerMove.bind(this)
@@ -75,6 +77,7 @@ export class InputCollector implements MetricCollector<InputMetrics> {
   }
 
   start(): void {
+    this.#running = true
     window.addEventListener("pointermove", this.#boundHandlePointerMove)
     if (this.#eventTimingSupported) {
       this.#startEventTimingObserver()
@@ -169,7 +172,10 @@ export class InputCollector implements MetricCollector<InputMetrics> {
   }
 
   stop(): void {
+    this.#running = false
     window.removeEventListener("pointermove", this.#boundHandlePointerMove)
+    for (const id of this.#pendingRafIds) cancelAnimationFrame(id)
+    this.#pendingRafIds.clear()
     this.#eventTimingObserver?.disconnect()
     this.#firstInputObserver?.disconnect()
     this.#eventTimingObserver = null
@@ -224,16 +230,19 @@ export class InputCollector implements MetricCollector<InputMetrics> {
 
   #handlePointerMove(event: PointerEvent): void {
     const eventTime = event.timeStamp
-    requestAnimationFrame(() => {
+    const firstId = requestAnimationFrame(() => {
+      this.#pendingRafIds.delete(firstId)
+      if (!this.#running) return
       const rafTime = performance.now()
-      const latency = rafTime - eventTime
-      this.#processInput(latency)
-      requestAnimationFrame(() => {
-        const paintEnd = performance.now()
-        const paintTime = paintEnd - rafTime
-        this.#processPaint(paintTime)
+      this.#processInput(rafTime - eventTime)
+      const secondId = requestAnimationFrame(() => {
+        this.#pendingRafIds.delete(secondId)
+        if (!this.#running) return
+        this.#processPaint(performance.now() - rafTime)
       })
+      this.#pendingRafIds.add(secondId)
     })
+    this.#pendingRafIds.add(firstId)
   }
 
   #processInput(latency: number): void {
