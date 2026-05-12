@@ -141,4 +141,4 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Publish to npm
-        run: npm publish dist-release/storybook-addon-profiler.tgz --provenance
+        run: npm publish ./dist-release/storybook-addon-profiler.tgz --provenance
