@@ -87,7 +87,7 @@
     "ag-grid-community": "^35.1.0",
     "ag-grid-react": "^35.1.0",
     "ag-grid-vue3": "^35.1.0",
-    "concurrently": "^9.1.0",
+    "concurrently": "^10.0.3",
     "prettier": "^3.8.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
