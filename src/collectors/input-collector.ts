@@ -23,7 +23,7 @@ interface PerformanceEventTimingEntry extends PerformanceEntry {
   targetSelector?: string
 }
 
-interface PerformanceWithInteractionCount extends Performance {
+interface PerformanceWithInteractionCount {
   interactionCount?: number
 }
 
