@@ -81,7 +81,7 @@
     "@storybook/react": "^10.2.10",
     "@storybook/react-vite": "^10.2.10",
     "@storybook/vue3-vite": "^10.2.10",
-    "@types/node": "^25.3.0",
+    "@types/node": "^26.1.0",
     "@types/react": "^19.2.14",
     "ag-grid-angular": "^36.0.0",
     "ag-grid-community": "^36.0.0",
