@@ -42,7 +42,7 @@
     "**/*.md"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && tsc -p tsconfig.build.json",
     "build:watch": "tsup --watch",
     "dev": "tsup && concurrently \"tsup --watch --no-clean\" \"bun run storybook:react\"",
     "format": "prettier --write .",
