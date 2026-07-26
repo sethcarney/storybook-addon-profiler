@@ -1,0 +1,36 @@
+{
+  "name": "storybook-addon-profiler",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:24-bookworm",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/bun:1": {
+      "version": "latest"
+    }
+  },
+  "forwardPorts": [6006, 6007, 6008],
+  "portsAttributes": {
+    "6006": {
+      "label": "Storybook (React)",
+      "onAutoForward": "notify"
+    },
+    "6007": {
+      "label": "Storybook (Vue 3)",
+      "onAutoForward": "notify"
+    },
+    "6008": {
+      "label": "Storybook (Angular)",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "remoteUser": "node",
+  "customizations": {
+    "vscode": {
+      "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "typescript.tsdk": "node_modules/typescript/lib"
+      }
+    }
+  }
+}
