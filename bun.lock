@@ -480,15 +480,15 @@
 
     "acorn-import-phases": ["acorn-import-phases@1.0.4", "", { "peerDependencies": { "acorn": "^8.14.0" } }, "sha512-wKmbr/DDiIXzEOiWrTTUcDm24kQ2vGfZQvM2fwg2vXqR5uW6aapr7ObPtj1th32b9u90/Pf4AItvdTh42fBmVQ=="],
 
-    "ag-charts-types": ["ag-charts-types@14.0.1", "", {}, "sha512-fGNDptlNzaQDqDoZxAYeLtBrV8sIXE1iRXX9s5W+/drobP3Ig2fhdAOlKp3IIrHlbiKZUiuhraqT0D4IYVyM4w=="],
+    "ag-charts-types": ["ag-charts-types@14.0.2", "", {}, "sha512-F7ZG0g8Y+iKhJi50AfZRwEyUM/TBsNyh2IoXB0JaDN97lnbemIK8GE5kF1eBtXtN4mcC+lPXK9oZUeVXwO9EWA=="],
 
-    "ag-grid-community": ["ag-grid-community@36.0.1", "", { "dependencies": { "ag-charts-types": "14.0.1", "ag-stack": "36.0.1" } }, "sha512-wQetUqoY6SBCtKzDjsYkImiGpM4+hU7S5/NvxcCAO6liL6mSRXlEvCHdQZUfj6amuhsdjVlGK1C8e+B54EyDTQ=="],
+    "ag-grid-community": ["ag-grid-community@36.0.2", "", { "dependencies": { "ag-charts-types": "14.0.2", "ag-stack": "36.0.2" } }, "sha512-TINZfuFvMY2nc3JfQHiUWT7dNIxI89ZxS5XkXIPi/rYICoNupRqpaM41KVzGPPfSkM0AwhuzTFxAiF08zEkV1Q=="],
 
-    "ag-grid-react": ["ag-grid-react@36.0.1", "", { "dependencies": { "ag-grid-community": "36.0.1", "prop-types": "^15.8.1" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-cqyZWHks9LF7MBZvX6QP8IGlYBScssdQ3B6EMli0nO2TClbBiRTZuP1ja3AwVL0THnl+WksO2kBB2ATWp8vVAQ=="],
+    "ag-grid-react": ["ag-grid-react@36.0.2", "", { "dependencies": { "ag-grid-community": "36.0.2", "prop-types": "^15.8.1" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-yVPmqdhx1zp06FLyZmwmIxIO57w4ko+qN64MXgPlBMJVL0MNA5hULqAY/+SoB4cd0bBHqz8okuuAbHHpu5QoHQ=="],
 
-    "ag-grid-vue3": ["ag-grid-vue3@36.0.1", "", { "dependencies": { "ag-grid-community": "36.0.1" }, "peerDependencies": { "vue": "^3.5.32" } }, "sha512-7zCbpnYL49IVgdiKnVDAXE/nFHlMANqxLCRzv+9+lPxzpRlOOENbuRpRVrOSyS4mdkI1aXIUvDBileihfCIzog=="],
+    "ag-grid-vue3": ["ag-grid-vue3@36.0.2", "", { "dependencies": { "ag-grid-community": "36.0.2" }, "peerDependencies": { "vue": "^3.5.32" } }, "sha512-3L9uyaWV3TMFlpZxrWZgxM8AyWOwDwDgprAV/k9qGpj4/vbOOAooSJ2PRSUjDPg3Yg49Csc+bFvLs/WplZWw8w=="],
 
-    "ag-stack": ["ag-stack@36.0.1", "", {}, "sha512-FsrO55fl7EDToQVgRDaTF1+QKWpfJK1nxTxTavkkfHeq6Kei4skAeP0MsjXm7zECjfyHczlwmWvp+KN7KHnlYQ=="],
+    "ag-stack": ["ag-stack@36.0.2", "", {}, "sha512-YuhQExQw5YsWK0wxrksRyYBAqOU0v08lJH5uxRsKx+49ko5vkDgnJuhX4yF995BBVdLY1LKlXukLEub+olKyuA=="],
 
     "ajv": ["ajv@8.18.0", "", { "dependencies": { "fast-deep-equal": "^3.1.3", "fast-uri": "^3.0.1", "json-schema-traverse": "^1.0.0", "require-from-string": "^2.0.2" } }, "sha512-PlXPeEWMXMZ7sPYOHqmDyCJzcfNrUr3fGNKtezX14ykXOEIvyK81d+qydx89KY5O71FKMPaQ2vBfBFI5NHR63A=="],
 
