@@ -1,3 +1,17 @@
+# Grouping policy
+#
+# Two kinds of groups are used here:
+#
+#   1. Must-match families — packages released in lockstep upstream that break
+#      when their versions drift apart. These groups deliberately carry NO
+#      `update-types` filter so that majors stay grouped too: a split major is
+#      exactly the case that breaks CI. This is about correctness, not noise.
+#
+#   2. A `minor-and-patch` catch-all per ecosystem, which sweeps up everything
+#      else at minor/patch level. It repeats each family's patterns under
+#      `exclude-patterns` so a family member can never be pulled out of its own
+#      group into the catch-all. Majors outside the families are left ungrouped
+#      and still arrive as individual PRs, where they get reviewed one at a time.
 version: 2
 updates:
   - package-ecosystem: bun
@@ -6,13 +20,39 @@ updates:
       interval: weekly
     open-pull-requests-limit: 10
     groups:
+      # Storybook publishes every package at one version; the addon is loaded
+      # by the same Storybook it builds against, so these must move together.
       storybook:
         patterns:
           - "storybook"
           - "@storybook/*"
+      # react and react-dom are a single upstream release and fail at runtime
+      # when they disagree. The @types packages track React's major, so they
+      # ride along to stop the types crossing a major boundary on their own.
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      # ag-grid ships community/react/vue3/angular as one versioned release.
       ag-grid:
         patterns:
           - "ag-grid-*"
+      minor-and-patch:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "storybook"
+          - "@storybook/*"
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+          - "ag-grid-*"
+        update-types:
+          - "minor"
+          - "patch"
 
   # The Angular test Storybook keeps its own dependency tree — see
   # .devcontainer/README.md for why it cannot share the root install.
@@ -26,6 +66,8 @@ updates:
         patterns:
           - "storybook"
           - "@storybook/*"
+      # The Angular packages are one monorepo release; zone.js is versioned
+      # separately but peer-pinned by @angular/core, so it moves with them.
       angular:
         patterns:
           - "@angular/*"
@@ -34,6 +76,19 @@ updates:
       ag-grid:
         patterns:
           - "ag-grid-*"
+      minor-and-patch:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "storybook"
+          - "@storybook/*"
+          - "@angular/*"
+          - "@angular-devkit/*"
+          - "zone.js"
+          - "ag-grid-*"
+        update-types:
+          - "minor"
+          - "patch"
     ignore:
       # Angular's compiler-cli peer-requires typescript >=6.0 <6.1; a major
       # bump here breaks the Angular test Storybook.
@@ -45,3 +100,23 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      # init, analyze and upload-sarif are three dependencies to Dependabot but
+      # one action pinned to one SHA. init writes a config that analyze reads,
+      # and a version mismatch fails the run with "Loaded a configuration file
+      # for version X, but running version Y" — see 30b2312, where #80 and #82
+      # had to be closed and replaced with a hand-written commit bumping both.
+      # No update-types filter: a split major is the worst version of this.
+      codeql-action:
+        patterns:
+          - "github/codeql-action"
+          - "github/codeql-action/*"
+      minor-and-patch:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "github/codeql-action"
+          - "github/codeql-action/*"
+        update-types:
+          - "minor"
+          - "patch"
