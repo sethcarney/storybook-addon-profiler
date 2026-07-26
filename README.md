@@ -122,6 +122,22 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for a full breakdown of the collector s
 
 ---
 
+## Development
+
+The repo ships a [dev container](./.devcontainer) (Node 24 LTS + Bun) that installs dependencies and builds the addon on create, and forwards the Storybook ports:
+
+| Command                     | Port |
+| --------------------------- | ---- |
+| `bun run storybook:react`   | 6006 |
+| `bun run storybook:vue`     | 6007 |
+| `bun run storybook:angular` | 6008 |
+
+Open the folder in a dev container ("Dev Containers: Reopen in Container" in VS Code, or `devcontainer up --workspace-folder .`), then run any of the above. Re-run `bun run build` after editing `src/`, since the test Storybooks load the built `dist/preset.js`.
+
+Working without the dev container needs Node 24.15+ (an `@angular/cli` requirement) and two installs — `bun install`, then `bun run install:angular`. The Angular test Storybook keeps its own dependency tree because Angular's compiler requires TypeScript 6.x while the addon builds on TypeScript 7; see [.devcontainer/README.md](./.devcontainer/README.md#why-testsangular-has-its-own-dependency-tree).
+
+---
+
 ## License
 
 Apache 2.0. See [LICENSE](./LICENSE) for details.
