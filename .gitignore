@@ -1,5 +1,6 @@
 node_modules/
 dist/
+.angular/
 storybook-static/
 *.tsbuildinfo
 .cache/

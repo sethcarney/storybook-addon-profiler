@@ -69,7 +69,7 @@ bun run dev                # tsup --watch + React Storybook dev
 # Per-framework test Storybooks (run after bun run build)
 bun run storybook:react    # React on port 6006
 bun run storybook:vue      # Vue 3 on port 6007
-bun run storybook:angular  # Angular on port 6008
+bun run storybook:angular  # Angular on port 6008 (needs bun run install:angular first)
 
 bun run build-storybook:react    # static build → storybook-static/react
 bun run build-storybook:vue      # static build → storybook-static/vue
@@ -98,10 +98,23 @@ tests/
     .storybook/main.ts      # @storybook/angular
     .storybook/preview.ts
     stories/Button.stories.ts
-    tsconfig.json           # extends root, adds experimentalDecorators
+    package.json            # separate dependency tree (see below)
+    bun.lock
+    angular.json            # Angular builder targets
+    tsconfig.json           # standalone — does NOT extend the root tsconfig
 ```
 
 Each test instance loads the addon via `../../../dist/preset.js` and registers `withPerformanceMonitor` in its own preview.ts.
+
+### tests/angular is a separate install
+
+Angular cannot share the root dependency tree: `@angular/compiler-cli` needs the classic TypeScript compiler API, which `typescript@7` no longer exports, and Angular 22 peer-requires `typescript >=6.0 <6.1`. So `tests/angular` has its own `package.json` / `bun.lock` / `node_modules` pinned to TypeScript 6.x, and the root stays on 7.
+
+- Install it with `bun run install:angular` (the dev container does this automatically).
+- `storybook:angular` / `build-storybook:angular` delegate to that package via `bun run --cwd tests/angular`, which runs the Angular builder (`ng run angular-test:…`) — `@storybook/angular` rejects the plain `storybook dev` CLI.
+- The `build` target in `angular.json` is never executed; it exists only so `browserTarget` resolves. Its `index`/`main` paths are placeholders.
+- `tsconfig.json` must list `.storybook/**/*` explicitly — TypeScript `include` globs skip dot-directories.
+- Requires Node 24.15+ (`@angular/cli` enforces this).
 
 ## Peer Dependencies
 
