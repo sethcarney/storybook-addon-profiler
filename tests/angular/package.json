@@ -1,0 +1,27 @@
+{
+  "name": "angular-test-storybook",
+  "private": true,
+  "type": "module",
+  "description": "Isolated dependency tree for the Angular test Storybook. Angular's compiler requires TypeScript 6.x, while the addon itself builds on TypeScript 7 — keeping this install separate lets both stay on the version they need.",
+  "scripts": {
+    "storybook": "ng run angular-test:storybook",
+    "build-storybook": "ng run angular-test:build-storybook"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^22.0.0",
+    "@angular/animations": "^22.0.0",
+    "@angular/cli": "^22.0.0",
+    "@angular/common": "^22.0.0",
+    "@angular/compiler": "^22.0.0",
+    "@angular/compiler-cli": "^22.0.0",
+    "@angular/core": "^22.0.0",
+    "@angular/platform-browser": "^22.0.0",
+    "@angular/platform-browser-dynamic": "^22.0.0",
+    "@storybook/angular": "^10.2.10",
+    "ag-grid-angular": "^36.0.0",
+    "ag-grid-community": "^36.0.0",
+    "storybook": "^10.2.10",
+    "typescript": "~6.0.3",
+    "zone.js": "^0.16.1"
+  }
+}

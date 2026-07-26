@@ -1,10 +1,15 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "rootDir": ".",
-    "outDir": "../../dist-angular-test"
+    "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
-  "include": ["."]
+  "include": [".", ".storybook/**/*"]
 }
