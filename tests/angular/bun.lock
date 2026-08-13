@@ -15,8 +15,8 @@
         "@angular/platform-browser": "^22.1.0",
         "@angular/platform-browser-dynamic": "^22.1.0",
         "@storybook/angular": "^10.5.5",
-        "ag-grid-angular": "^36.0.0",
-        "ag-grid-community": "^36.0.0",
+        "ag-grid-angular": "^36.1.0",
+        "ag-grid-community": "^36.1.0",
         "storybook": "^10.5.5",
         "typescript": "~6.0.3",
         "zone.js": "^0.16.1",
@@ -736,13 +736,13 @@
 
     "adjust-sourcemap-loader": ["adjust-sourcemap-loader@4.0.0", "", { "dependencies": { "loader-utils": "^2.0.0", "regex-parser": "^2.2.11" } }, "sha512-OXwN5b9pCUXNQHJpwwD2qP40byEmSgzj8B4ydSN0uMNYWiFmJ6x6KwUllMmfk8Rwu/HJDFR7U8ubsWBoN0Xp0A=="],
 
-    "ag-charts-types": ["ag-charts-types@14.0.2", "", {}, "sha512-F7ZG0g8Y+iKhJi50AfZRwEyUM/TBsNyh2IoXB0JaDN97lnbemIK8GE5kF1eBtXtN4mcC+lPXK9oZUeVXwO9EWA=="],
+    "ag-charts-types": ["ag-charts-types@14.1.0", "", {}, "sha512-mmzkng88c0l+Z9PvCMowMilhVeNgDU/iMuMemcOQD4BG/qO4vbkxWvyQO0iqju8Dx7YOY81PNzC/RmElQNiVkA=="],
 
-    "ag-grid-angular": ["ag-grid-angular@36.0.2", "", { "dependencies": { "ag-grid-community": "36.0.2", "tslib": "^2.8.1" }, "peerDependencies": { "@angular/common": ">= 20.0.0", "@angular/core": ">= 20.0.0" } }, "sha512-qBEvOmkcmioJTLZOozoJMYFMSu0/+I6fmeYJ7xrzxv3X88Vr/MoytdiR1j9GbLuhG8tusePfNiwuDnAJxEzbBw=="],
+    "ag-grid-angular": ["ag-grid-angular@36.1.0", "", { "dependencies": { "ag-grid-community": "36.1.0", "tslib": "^2.8.1" }, "peerDependencies": { "@angular/common": ">= 20.0.0", "@angular/core": ">= 20.0.0" } }, "sha512-7TSAjoIWko/Ce52rIE8PC2unlzSe7q59KbbQP8Rg+hvp92JrwYMAt5rE9P4mDgAhOgVJXB2cpMevAA+ZGe3Eyg=="],
 
-    "ag-grid-community": ["ag-grid-community@36.0.2", "", { "dependencies": { "ag-charts-types": "14.0.2", "ag-stack": "36.0.2" } }, "sha512-TINZfuFvMY2nc3JfQHiUWT7dNIxI89ZxS5XkXIPi/rYICoNupRqpaM41KVzGPPfSkM0AwhuzTFxAiF08zEkV1Q=="],
+    "ag-grid-community": ["ag-grid-community@36.1.0", "", { "dependencies": { "ag-charts-types": "14.1.0", "ag-stack": "36.1.0" } }, "sha512-WnvSQ4csRs8gv/b1B0lPHykQXvUJVgi2u5mpY0Aa6dv3pvhDVVqCT8dwUyOeCog4JNPptaXGrOrZ8qP2XoJzVA=="],
 
-    "ag-stack": ["ag-stack@36.0.2", "", {}, "sha512-YuhQExQw5YsWK0wxrksRyYBAqOU0v08lJH5uxRsKx+49ko5vkDgnJuhX4yF995BBVdLY1LKlXukLEub+olKyuA=="],
+    "ag-stack": ["ag-stack@36.1.0", "", {}, "sha512-Kmkf5iRZmyduNx2KtW450j6GbCdJ4ejacSpb1AWl0yrdquRmScLRc1SlLolx6lyCbTBSJGo4tRraKbBzre+GlQ=="],
 
     "agent-base": ["agent-base@9.0.0", "", {}, "sha512-TQf59BsZnytt8GdJKLPfUZ54g/iaUL2OWDSFCCvMOhsHduDQxO8xC4PNeyIkVcA5KwL2phPSv0douC0fgWzmnA=="],
 
