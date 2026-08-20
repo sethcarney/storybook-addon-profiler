@@ -17,10 +17,10 @@
     "@angular/core": "^22.1.2",
     "@angular/platform-browser": "^22.1.2",
     "@angular/platform-browser-dynamic": "^22.1.0",
-    "@storybook/angular": "^10.5.7",
+    "@storybook/angular": "^10.5.8",
     "ag-grid-angular": "^36.1.0",
     "ag-grid-community": "^36.1.0",
-    "storybook": "^10.5.7",
+    "storybook": "^10.5.8",
     "typescript": "~6.0.3",
     "zone.js": "^0.16.1"
   }
