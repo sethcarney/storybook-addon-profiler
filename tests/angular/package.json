@@ -18,8 +18,8 @@
     "@angular/platform-browser": "^22.2.4",
     "@angular/platform-browser-dynamic": "^22.2.4",
     "@storybook/angular": "^10.5.8",
-    "ag-grid-angular": "^36.2.0",
-    "ag-grid-community": "^36.2.0",
+    "ag-grid-angular": "^36.3.0",
+    "ag-grid-community": "^36.3.0",
     "storybook": "^10.5.8",
     "typescript": "~6.0.3",
     "zone.js": "^0.16.3"
